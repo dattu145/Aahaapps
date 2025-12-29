@@ -87,4 +87,40 @@ class CmsTest extends TestCase
 
         $this->assertDatabaseHas('pages', ['title' => 'Updated Page']);
     }
+    public function test_admin_can_manage_services(): void
+    {
+        $user = User::factory()->create(['role' => 'super-admin']);
+
+        $response = $this->actingAs($user)->get(route('admin.services.index'));
+        $response->assertStatus(200);
+
+        $response = $this->actingAs($user)->post(route('admin.services.store'), [
+            'name' => 'Web Development',
+            'description' => 'We build websites.',
+            'is_active' => true,
+        ]);
+
+        $response->assertRedirect(route('admin.services.index'));
+        $this->assertDatabaseHas('services', ['name' => 'Web Development']);
+    }
+
+    public function test_public_home_renders_services(): void
+    {
+        // Must clear cache/existing pages to ensure clean state if needed, or just create home if not exists
+        \App\Models\Page::firstOrCreate(
+            ['slug' => 'home'],
+            ['title' => 'Home', 'content' => 'Welcome', 'is_active' => true]
+        );
+
+        \App\Models\Service::create([
+            'name' => 'SEO Services',
+            'description' => 'Rank high.',
+            'is_active' => true,
+        ]);
+
+        $response = $this->get('/');
+        $response->assertStatus(200);
+        $response->assertSee('SEO Services');
+        $response->assertSee('Rank high.');
+    }
 }

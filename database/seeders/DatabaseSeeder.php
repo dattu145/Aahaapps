@@ -65,5 +65,24 @@ class DatabaseSeeder extends Seeder
         }
 
         \App\Models\Setting::set('logo', null);
+
+        // Services
+        $serviceItems = [
+            ['name' => 'Web Development', 'description' => 'Custom websites tailored to your needs.', 'order' => 1],
+            ['name' => 'App Development', 'description' => 'Native and hybrid mobile applications.', 'order' => 2],
+            ['name' => 'SEO Optimization', 'description' => 'Improve your search engine rankings.', 'order' => 3],
+            ['name' => 'Digital Marketing', 'description' => 'Reach your audience effectively.', 'order' => 4],
+            ['name' => 'Cloud Solutions', 'description' => 'Scalable cloud infrastructure management.', 'order' => 5],
+            ['name' => 'Business Consulting', 'description' => 'Expert advice for growing your business.', 'order' => 6],
+        ];
+
+        foreach ($serviceItems as $item) {
+            \App\Models\Service::create([
+                'name' => $item['name'],
+                'description' => $item['description'],
+                'is_active' => true,
+                'order' => $item['order'],
+            ]);
+        }
     }
 }

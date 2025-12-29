@@ -23,6 +23,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
     Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class);
     Route::resource('pages', \App\Http\Controllers\Admin\PageController::class);
+    Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
 });
 
 require __DIR__.'/auth.php';

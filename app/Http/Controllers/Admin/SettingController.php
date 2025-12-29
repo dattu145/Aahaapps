@@ -13,6 +13,8 @@ class SettingController extends Controller
     {
         return view('admin.settings.index', [
             'logo' => Setting::get('logo'),
+            'whatsapp_number' => Setting::get('whatsapp_number'),
+            'min_login_url' => Setting::get('min_login_url'),
         ]);
     }
 
@@ -20,6 +22,8 @@ class SettingController extends Controller
     {
         $request->validate([
             'logo' => 'nullable|image|max:2048',
+            'whatsapp_number' => 'nullable|string|max:20',
+            'min_login_url' => 'nullable|url',
         ]);
 
         if ($request->hasFile('logo')) {
@@ -32,6 +36,14 @@ class SettingController extends Controller
             }
 
             Setting::set('logo', $path);
+        }
+
+        if ($request->has('whatsapp_number')) {
+            Setting::set('whatsapp_number', $request->input('whatsapp_number'));
+        }
+
+        if ($request->has('min_login_url')) {
+            Setting::set('min_login_url', $request->input('min_login_url'));
         }
 
         return back()->with('success', 'Settings updated successfully.');

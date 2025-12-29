@@ -21,6 +21,17 @@
                                 </div>
                             @endif
                         </div>
+
+                        <div class="mb-4">
+                            <label for="whatsapp_number" class="block text-sm font-medium text-gray-700">WhatsApp Number</label>
+                            <input type="text" name="whatsapp_number" id="whatsapp_number" value="{{ $whatsapp_number }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="e.g. 919876543210">
+                            <p class="text-xs text-gray-500 mt-1">Enter number with country code, without + or spaces.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="min_login_url" class="block text-sm font-medium text-gray-700">Default Login URL</label>
+                            <input type="url" name="min_login_url" id="min_login_url" value="{{ $min_login_url ?? 'https://profile.aahaapps.com/' }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        </div>
                         <x-primary-button>{{ __('Save Settings') }}</x-primary-button>
                     </form>
                 </div>

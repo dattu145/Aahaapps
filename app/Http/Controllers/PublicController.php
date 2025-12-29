@@ -16,7 +16,9 @@ class PublicController extends Controller
             return view('welcome');
         }
 
-        return view('page', compact('page'));
+        $services = \App\Models\Service::active()->ordered()->get();
+
+        return view('page', compact('page', 'services'));
     }
 
     public function show($slug)

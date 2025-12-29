@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('admin.pages.index')" :active="request()->routeIs('admin.pages.*')">
                         {{ __('Pages') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('admin.services.index')" :active="request()->routeIs('admin.services.*')">
+                        {{ __('Services') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
                         {{ __('Settings') }}
                     </x-nav-link>
@@ -78,6 +81,18 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.menus.index')" :active="request()->routeIs('admin.menus.*')">
+                {{ __('Menus') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.pages.index')" :active="request()->routeIs('admin.pages.*')">
+                {{ __('Pages') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.services.index')" :active="request()->routeIs('admin.services.*')">
+                {{ __('Services') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
+                {{ __('Settings') }}
             </x-responsive-nav-link>
         </div>
 
