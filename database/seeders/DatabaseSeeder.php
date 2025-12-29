@@ -23,5 +23,21 @@ class DatabaseSeeder extends Seeder
             'role' => 'super-admin',
             'password' => bcrypt('password'),
         ]);
+        // CMS Data
+        \App\Models\Page::create([
+            'title' => 'Home',
+            'slug' => 'home',
+            'content' => 'Welcome to Aaha Apps! This content is managed via the CMS.',
+            'is_active' => true,
+        ]);
+
+        \App\Models\MenuItem::create([
+            'label' => 'Home',
+            'url' => '/',
+            'order' => 1,
+            'is_active' => true,
+        ]);
+        
+        \App\Models\Setting::set('logo', null);
     }
 }
