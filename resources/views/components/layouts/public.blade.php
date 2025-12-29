@@ -18,19 +18,21 @@
         <div class="h-16 flex items-center justify-center border-b border-gray-100 px-6">
             @if(isset($globalSettings['logo']) && $globalSettings['logo'])
                 <img src="{{ asset('storage/' . $globalSettings['logo']) }}" alt="Logo" class="h-10 w-auto">
+            @elseif(isset($globalSettings['logo_url']) && $globalSettings['logo_url'])
+                <img src="{{ $globalSettings['logo_url'] }}" alt="Logo" class="h-10 w-auto">
             @else
                 <span class="font-bold text-xl text-indigo-600">{{ config('app.name') }}</span>
             @endif
         </div>
 
         <!-- Desktop Navigation Links -->
-        <nav class="flex-1 overflow-y-auto py-4 px-4 space-y-2">
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
             @foreach($globalMenu as $item)
                 <a href="{{ $item->url }}" 
-                   class="flex items-center px-4 py-3 rounded-lg transition-colors group
-                   {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                   class="flex items-center px-4 py-3 rounded-xl transition-all duration-200 group font-medium
+                   {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'bg-indigo-50 text-indigo-700 shadow-sm' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                     <!-- Icon placeholder (could add icon field to DB later) -->
-                    <span class="w-2 h-2 rounded-full mr-3 {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'bg-indigo-600' : 'bg-gray-300 group-hover:bg-gray-400' }}"></span>
+                    <span class="w-2 h-2 rounded-full mr-3 transition-colors duration-200 {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'bg-indigo-600 ring-2 ring-indigo-100' : 'bg-gray-300 group-hover:bg-gray-400' }}"></span>
                     {{ $item->label }}
                 </a>
             @endforeach
@@ -48,6 +50,8 @@
         <div class="flex items-center">
             @if(isset($globalSettings['logo']) && $globalSettings['logo'])
                 <img src="{{ asset('storage/' . $globalSettings['logo']) }}" alt="Logo" class="h-8 w-auto">
+            @elseif(isset($globalSettings['logo_url']) && $globalSettings['logo_url'])
+                <img src="{{ $globalSettings['logo_url'] }}" alt="Logo" class="h-8 w-auto">
             @else
                 <span class="font-bold text-xl text-indigo-600">{{ config('app.name') }}</span>
             @endif
@@ -98,12 +102,12 @@
 
     <!-- MOBILE BOTTOM NAVBAR -->
     <!-- Fixed bottom, visible on mobile -->
-    <nav class="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-200 z-40 flex items-center justify-around pb-safe">
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-md border-t border-gray-200 z-40 flex items-center justify-around pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <!-- Display first 4 items or specific ones logic later. For now, showing up to 4 items. -->
         @foreach($globalMenu->take(4) as $item)
-            <a href="{{ $item->url }}" class="flex flex-col items-center justify-center w-full h-full space-y-1 {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600' }}">
+            <a href="{{ $item->url }}" class="flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors duration-200 {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600' }}">
                 <!-- Placeholder Icons based on label first char or random -->
-                <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'border-indigo-600' : 'border-gray-300' }} text-xs font-bold uppercase">
+                <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'border-indigo-600 bg-indigo-50 scale-110' : 'border-gray-300' }} text-[10px] font-bold uppercase">
                     {{ substr($item->label, 0, 1) }}
                 </div>
                 <span class="text-[10px] font-medium">{{ $item->label }}</span>

@@ -1,55 +1,71 @@
 <x-layouts.public :page="$page">
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl p-6 md:p-10 animate-fade-in-up">
             @if($page->image)
-                <div class="mb-8 rounded-xl overflow-hidden shadow-lg h-64 md:h-96">
-                    <img src="{{ asset('storage/' . $page->image) }}" alt="{{ $page->title }}" class="w-full h-full object-cover">
+                <div class="mb-8 rounded-2xl overflow-hidden shadow-md h-64 md:h-96 relative group">
+                    <img src="{{ asset('storage/' . $page->image) }}" alt="{{ $page->title }}" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
                 </div>
             @endif
 
-            <h1 class="text-3xl font-bold mb-4">{{ $page->title }}</h1>
-            <div class="prose max-w-none mb-10">
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-6 text-gray-900 tracking-tight leading-tight">{{ $page->title }}</h1>
+            
+            <div class="prose prose-lg max-w-none mb-12 text-gray-600 leading-relaxed">
                 {!! nl2br(e($page->content)) !!}
             </div>
 
             @if($page->cta_text && $page->cta_url)
-                <div class="mt-8 mb-12 text-center">
+                <div class="mt-8 mb-16 text-center" x-data="{ loading: false }">
                     <a href="{{ $page->cta_url }}" 
-                       class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10 transition-colors duration-200">
-                        {{ $page->cta_text }}
+                       @click="loading = true"
+                       class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-full text-white bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 relative overflow-hidden">
+                        <span x-show="!loading">{{ $page->cta_text }}</span>
+                        <span x-show="loading" class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Redirecting...
+                        </span>
                     </a>
                 </div>
             @endif
             
             @if($page->slug === 'home' && isset($services) && $services->count() > 0)
-                <div class="mt-8">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-800">Our Services</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="mt-16 border-t border-gray-100 pt-16">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">Our Services</h2>
+                        <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-500">Comprehensive solutions tailored for your growth.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         @foreach($services as $service)
-                            <div class="bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col h-full">
+                            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden flex flex-col h-full group">
                                 @if($service->image)
-                                    <div class="h-48 w-full overflow-hidden bg-gray-100">
-                                        <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->name }}" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
+                                    <div class="h-56 w-full overflow-hidden bg-gray-50 relative">
+                                        <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300 z-10"></div>
+                                        <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->name }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
                                     </div>
                                 @elseif($service->image_url)
-                                    <div class="h-48 w-full overflow-hidden bg-gray-100">
-                                        <img src="{{ $service->image_url }}" alt="{{ $service->name }}" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
+                                    <div class="h-56 w-full overflow-hidden bg-gray-50 relative">
+                                         <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300 z-10"></div>
+                                        <img src="{{ $service->image_url }}" alt="{{ $service->name }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
                                     </div>
                                 @else
-                                    <div class="h-48 w-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-                                        <span class="text-4xl text-indigo-300 font-bold opacity-50">{{ substr($service->name, 0, 1) }}</span>
+                                    <div class="h-56 w-full bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center group-hover:from-indigo-100 group-hover:to-purple-100 transition-colors duration-300">
+                                        <span class="text-5xl text-indigo-200 font-extrabold group-hover:text-indigo-300 transition-colors duration-300">{{ substr($service->name, 0, 1) }}</span>
                                     </div>
                                 @endif
                                 
-                                <div class="p-6 flex flex-col flex-grow">
-                                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $service->name }}</h3>
-                                    <p class="text-gray-600 mb-6 flex-grow text-sm leading-relaxed">{{ Str::limit($service->description, 120) }}</p>
+                                <div class="p-8 flex flex-col flex-grow relative">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors duration-300">{{ $service->name }}</h3>
+                                    <p class="text-gray-600 mb-8 flex-grow text-base leading-relaxed">{{ Str::limit($service->description, 120) }}</p>
                                     
-                                    <div class="flex space-x-3 mt-auto">
+                                    <div class="flex space-x-4 mt-auto">
                                         <!-- Login Button -->
                                         <a href="{{ $service->login_url ?? \App\Models\Setting::get('min_login_url') ?? 'https://profile.aahaapps.com/' }}" 
                                            target="_blank"
-                                           class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200">
+                                           class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg">
                                             Login
                                         </a>
 
@@ -61,7 +77,7 @@
                                         @endphp
                                         <a href="{{ $waLink }}" 
                                            target="_blank"
-                                           class="flex-1 text-center bg-green-500 hover:bg-green-600 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200">
+                                           class="flex-1 text-center bg-emerald-500 hover:bg-emerald-600 focus:ring-4 focus:ring-emerald-200 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg">
                                             Enquiry
                                         </a>
                                     </div>
