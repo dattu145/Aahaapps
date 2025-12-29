@@ -59,8 +59,11 @@ class DatabaseSeeder extends Seeder
             \App\Models\Page::create([
                 'title' => $item['label'],
                 'slug' => strtolower($item['label']),
-                'content' => "Welcome to the {$item['label']} page. Content coming soon.",
+                'content' => "Welcome to the {$item['label']} page.\n\nManage your {$item['label']} effectively with Aaha Apps. Sign up now to get started!",
                 'is_active' => true,
+                'meta_description' => "Explore our {$item['label']} solutions.",
+                'cta_text' => "Get Started with {$item['label']}",
+                'cta_url' => 'https://profile.aahaapps.com/',
             ]);
         }
 

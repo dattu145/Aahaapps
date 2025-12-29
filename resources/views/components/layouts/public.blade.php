@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ isset($page) ? $page->title : config('app.name') }}</title>
+    @if(isset($page) && $page->meta_description)
+        <meta name="description" content="{{ $page->meta_description }}">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="antialiased bg-gray-50 text-gray-900 font-sans" x-data="{ sidebarOpen: false, mobileMenuOpen: false }">

@@ -123,4 +123,24 @@ class CmsTest extends TestCase
         $response->assertSee('SEO Services');
         $response->assertSee('Rank high.');
     }
+    public function test_dynamic_pages_have_seo_and_cta(): void
+    {
+        Page::create([
+            'title' => 'Store',
+            'slug' => 'store',
+            'content' => 'Store Content',
+            'meta_description' => 'Best Store',
+            'cta_text' => 'Go to Store',
+            'cta_url' => 'https://store.example.com',
+            'is_active' => true,
+        ]);
+
+        $response = $this->get('/store');
+
+        $response->assertStatus(200);
+        $response->assertSee('Store Content');
+        $response->assertSee('Best Store'); // Meta description
+        $response->assertSee('Go to Store'); // CTA Text
+        $response->assertSee('https://store.example.com'); // CTA URL
+    }
 }

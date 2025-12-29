@@ -9,7 +9,7 @@ class Page extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['slug', 'title', 'content', 'is_active'];
+    protected $fillable = ['slug', 'title', 'content', 'is_active', 'meta_description', 'image', 'cta_text', 'cta_url'];
 
     protected $casts = [
         'is_active' => 'boolean',
