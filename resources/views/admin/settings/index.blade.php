@@ -61,6 +61,13 @@
                                     <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Or Image URL</label>
                                     <input type="url" name="logo_url" x-model="imageUrl" @input.debounce.500ms="handleUrlInput" placeholder="https://example.com/logo.png" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                                 </div>
+
+                                <!-- WhatsApp Number -->
+                                <div>
+                                    <label for="whatsapp_number" class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">WhatsApp Number</label>
+                                    <input type="text" name="whatsapp_number" id="whatsapp_number" value="{{ $whatsapp_number ?? '' }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="e.g. 919876543210">
+                                    <p class="text-xs text-gray-400 mt-1">Enter number with country code (without +)</p>
+                                </div>
                             </div>
                             
                             <!-- Current Logo Display (Server Side) -->

@@ -9,16 +9,13 @@ class PublicController extends Controller
 {
     public function index()
     {
-        // Default to 'home' page if exists, else show welcome
-        $page = Page::where('slug', 'home')->where('is_active', true)->first();
-
-        if (!$page) {
-            return view('welcome');
-        }
-
+        // Custom Premium Homepage Logic
+        // We use 'welcome.blade.php' for the "/" route to support the new custom design.
+        // We still fetch content if needed, but the view is specific.
         $services = \App\Models\Service::active()->ordered()->get();
+        // $page = Page::where('slug', 'home')->where('is_active', true)->first(); 
 
-        return view('page', compact('page', 'services'));
+        return view('welcome', compact('services'));
     }
 
     public function show($slug)
