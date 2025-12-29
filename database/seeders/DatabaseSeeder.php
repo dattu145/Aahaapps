@@ -38,6 +38,32 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
         
+        $items = [
+            ['label' => 'About', 'url' => '/about', 'order' => 2],
+            ['label' => 'Contact', 'url' => '/contact', 'order' => 3],
+            ['label' => 'Store', 'url' => '/store', 'order' => 4],
+            ['label' => 'ERP', 'url' => '/erp', 'order' => 5],
+            ['label' => 'CRM', 'url' => '/crm', 'order' => 6],
+            ['label' => 'Blog', 'url' => '/blog', 'order' => 7],
+        ];
+
+        foreach ($items as $item) {
+            \App\Models\MenuItem::create([
+                'label' => $item['label'],
+                'url' => $item['url'],
+                'order' => $item['order'],
+                'is_active' => true,
+            ]);
+
+            // Also create a page for each so links don't 404
+            \App\Models\Page::create([
+                'title' => $item['label'],
+                'slug' => strtolower($item['label']),
+                'content' => "Welcome to the {$item['label']} page. Content coming soon.",
+                'is_active' => true,
+            ]);
+        }
+
         \App\Models\Setting::set('logo', null);
     }
 }
