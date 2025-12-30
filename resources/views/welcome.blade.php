@@ -75,9 +75,106 @@
         .menu-item-hover:hover {
             transform: translateX(4px);
         }
+        
+        /* CIRCULAR CAROUSEL STYLES - REFINED FOR GAPLESS LOOP AND BOTTOM ORIGIN */
+        .circular-wrapper {
+            position: absolute;
+            bottom: 0; /* Origin anchored at bottom edge */
+            left: 50%;
+            transform: translate(-50%, 50%); /* Move down by 50% so center aligns with bottom edge */
+            width: 60vh;
+            height: 60vh;
+            border-radius: 50%;
+            z-index: 30;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            pointer-events: none;
+        }
+        
+        @media (max-width: 768px) {
+             .circular-wrapper {
+                width: 50vh; /* Reduced for mobile for better fit */
+                height: 50vh;
+                transform: translate(-50%, 50%); 
+             }
+        }
+
+        .circular-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transform-origin: center center;
+            will-change: transform;
+            pointer-events: auto;
+            cursor: grab;
+        }
+
+        .circular-item {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 200px; 
+            height: 250px; 
+            margin-left: -100px; 
+            margin-top: -125px; 
+            /* 
+               Fix for Wobble: 
+               Item 'top' is shifted up by 125px. 
+               Wrapper center is at 55vh.
+               We need pivot to be at (55vh) relative to wrapper top.
+               Relative to Item top, that is (55vh + 125px).
+            */
+            transform-origin: center calc(30vh + 125px); 
+        }
+        
+        @media (max-width: 768px) {
+            .circular-item {
+                 width: 140px; /* Slightly smaller cards on mobile */
+                 height: 180px;
+                 margin-left: -70px;
+                 margin-top: -90px;
+                 /* Mobile: Radius 25vh (half of 50vh) + half height 90px */
+                 transform-origin: center calc(25vh + 90px); 
+            }
+        }
+
+        .circular-item .card-inner {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .circular-item:hover .card-inner {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05) translateY(-10px);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        }
+
+        /* Scroll Lock Utility */
+        .no-scroll {
+            overflow: hidden;
+            height: 100vh;
+        }
     </style>
 </head>
-<body class="antialiased bg-gray-50 text-gray-900 font-sans selection:bg-indigo-100 selection:text-indigo-700" 
+<body class="antialiased bg-gray-50 text-gray-900 font-sans selection:bg-indigo-100 selection:text-indigo-700 overflow-hidden" 
+      id="main-body"
       x-data="{ 
           menuOpen: false, 
           menuState: 'collapsed',
@@ -358,23 +455,55 @@
         <div class="absolute inset-0 bg-black/50 z-10"></div>
 
         <!-- Hero Content -->
-        <div class="relative z-20 h-full flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8">
+        <div class="relative z-20 h-full flex flex-col px-4 sm:px-6 lg:px-8 pointer-events-none">
             
-            <h1 class="text-6xl md:text-8xl lg:text-9xl font-extrabold text-white tracking-tighter mb-6 opacity-0 animate-fade-in-up">
-                Aaha Apps
-            </h1>
+            <!-- Spacer for fixed menu (approx 100px - 150px safe area) -->
+            <div class="h-32 md:h-40 flex-shrink-0"></div>
 
-            <p class="text-xl md:text-3xl text-gray-200 max-w-4xl mx-auto font-light leading-relaxed mb-10 opacity-0 animate-fade-in-up delay-300">
-                Igniting <span class="font-semibold text-white">digital excellence</span> with premium Video & Web solutions.
-            </p>
+            <!-- Content centered in remaining space -->
+            <div class="flex-1 flex flex-col items-center justify-center pb-48">
+                <h1 class="text-6xl md:text-8xl lg:text-9xl font-extrabold text-white tracking-tighter mb-6 opacity-0 animate-fade-in-up pointer-events-auto shadow-sm">
+                    Aaha Apps
+                </h1>
 
-            <div class="flex gap-6 opacity-0 animate-fade-in-up delay-500">
-                <a href="#services" class="px-10 py-5 bg-white text-black font-bold text-lg rounded-full hover:scale-105 transition-transform duration-300 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                    Explore Services
-                </a>
-                <a href="/contact" class="px-10 py-5 glass-panel text-white font-bold text-lg rounded-full hover:bg-white/20 transition-all duration-300">
-                    Contact Us
-                </a>
+                <p class="text-xl md:text-2xl text-white max-w-4xl mx-auto font-light leading-relaxed mb-10 opacity-0 animate-fade-in-up delay-300 pointer-events-auto drop-shadow-md">
+                    Igniting <span class="font-semibold text-white">digital excellence</span> with premium Video & Web solutions.
+                </p>
+
+                <div class="opacity-0 animate-fade-in-up delay-500 pointer-events-auto z-50">
+                    <button type="button" 
+                       onclick="unlockScroll()"
+                       class="flex flex-col items-center gap-1 text-white/90 hover:text-white transition-colors duration-300 group">
+                        <span class="text-sm font-medium tracking-[0.2em] uppercase text-shadow-sm">Show all services</span>
+                        <svg class="w-6 h-6 animate-bounce mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Circular Draggable Services Loop -->
+        <div class="circular-wrapper pointer-events-auto" id="circularWrapper">
+            <div class="circular-container" id="circularContainer">
+                @php
+                    $loopServices = collect();
+                    if (isset($services) && $services->count() > 0) {
+                        $loopServices = $services;
+                        $iterations = 0;
+                        while($loopServices->count() < 15 && $iterations < 20) {
+                            $loopServices = $loopServices->merge($services);
+                            $iterations++;
+                        }
+                    }
+                @endphp
+                @foreach($loopServices as $index => $service)
+                    <div class="circular-item">
+                        <div class="card-inner group">
+                            <h3 class="text-xl font-bold mb-2 group-hover:scale-110 transition-transform">{{ $service->name }}</h3>
+                            <div class="w-10 h-1 bg-white/50 rounded mt-2 mb-4"></div>
+                            <span class="text-xs uppercase tracking-widest border border-white/30 px-3 py-1 rounded-full group-hover:bg-white group-hover:text-black transition-colors">Explore</span>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
@@ -455,5 +584,119 @@
     </div>
 
     @livewireScripts
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Force scroll to top on refresh
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
+            window.scrollTo(0, 0);
+
+            const container = document.getElementById('circularContainer');
+            const items = document.querySelectorAll('.circular-item');
+            const totalItems = items.length;
+            if (totalItems === 0) return;
+
+            // Geometry Config
+            // Dynamic Angle Step for Perfect 360 Loop
+            const angleStep = 360 / totalItems; 
+            
+            // Initial distribution
+            items.forEach((item, index) => {
+                const angle = index * angleStep;
+                
+                // Set radius dynamically if needed, but CSS handles layout.
+                // We just rotate.
+                item.style.transform = `rotate(${angle}deg)`;
+            });
+
+            // Physics Variables
+            let currentRotation = 0;
+            let targetRotation = 0;
+            let isDragging = false;
+            let startX = 0;
+            let lastX = 0;
+            let velocity = 0;
+            const friction = 0.95;
+            let autoRotateSpeed = 0.03; // Slower auto rotate for elegance
+
+            function animate() {
+                if (!isDragging) {
+                    targetRotation += autoRotateSpeed;
+                    if (Math.abs(velocity) > 0.01) {
+                        targetRotation += velocity;
+                        velocity *= friction;
+                    }
+                }
+
+                currentRotation += (targetRotation - currentRotation) * 0.1;
+                
+                container.style.transform = `rotate(${currentRotation}deg)`;
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            // Interaction
+            const wrapper = document.getElementById('circularWrapper');
+
+            wrapper.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                lastX = e.clientX;
+                velocity = 0;
+                container.style.cursor = 'grabbing';
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+                container.style.cursor = 'grab';
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const deltaX = e.clientX - lastX;
+                lastX = e.clientX;
+                
+                // Inverted control or natural? 
+                // Drag LEFT -> Rotate Counter Clockwise? 
+                // Testing: Drag Left (negative delta) moves things left.
+                // Rotation negative moves items CCW. 
+                // So deltaX matches rotation direction intuitively for bottom arc.
+                
+                const rotateDelta = deltaX * 0.1;
+                targetRotation += rotateDelta;
+                velocity = rotateDelta;
+                
+                // Update auto speed to match throw direction
+                autoRotateSpeed = (velocity > 0 ? 0.05 : -0.05);
+            });
+
+            // Touch
+            wrapper.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                lastX = e.touches[0].clientX;
+                velocity = 0;
+            });
+            window.addEventListener('touchend', () => isDragging = false);
+            window.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const deltaX = e.touches[0].clientX - lastX;
+                lastX = e.touches[0].clientX;
+                const rotateDelta = deltaX * 0.1;
+                targetRotation += rotateDelta;
+                velocity = rotateDelta;
+            });
+        });
+
+        function unlockScroll() {
+            const body = document.getElementById('main-body');
+            const servicesSection = document.getElementById('services');
+            body.classList.remove('overflow-hidden');
+            body.style.overflow = 'auto';
+            servicesSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
