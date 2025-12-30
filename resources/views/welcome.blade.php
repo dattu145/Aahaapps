@@ -470,16 +470,13 @@
                     Igniting <span class="font-semibold text-white">digital excellence</span> with premium Video & Web solutions.
                 </p>
 
-                <div class="opacity-0 animate-fade-in-up delay-500 pointer-events-auto z-50">
-                    <button type="button" 
-                       onclick="unlockScroll()"
-                       class="flex flex-col items-center gap-1 text-white/90 hover:text-white transition-colors duration-300 group">
-                        <span class="text-sm font-medium tracking-[0.2em] uppercase text-shadow-sm">Show all services</span>
-                        <svg class="w-6 h-6 animate-bounce mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                </div>
+
             </div>
         </div>
+
+
+
+
 
         <!-- Circular Draggable Services Loop -->
         <div class="circular-wrapper pointer-events-auto" id="circularWrapper">
@@ -584,6 +581,40 @@
     </div>
 
     @livewireScripts
+
+
+    <!-- UNIFIED Fixed Floating Button -->
+    <style>
+        #fixed-services-btn {
+            position: fixed;
+            z-index: 2147483647;
+            right: 20px;
+            top: 90px;
+            transition: all 0.3s ease;
+        }
+        @media (min-width: 768px) {
+            #fixed-services-btn {
+                right: 40px;
+                top: 120px;
+            }
+        }
+        /* Ensure it's always visible */
+        #fixed-services-btn { display: block !important; opacity: 1 !important; visibility: visible !important; }
+    </style>
+    
+    <div id="fixed-services-btn">
+        <button type="button" 
+                onclick="unlockScroll()"
+                class="group flex items-center gap-3 bg-black/30 hover:bg-black/50 backdrop-blur-md border border-white/20 pl-4 pr-1.5 py-1.5 md:pl-5 md:pr-2 md:py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-indigo-500/20">
+            <!-- Text: smaller on mobile, larger on desktop -->
+            <span class="text-white font-bold text-[10px] md:text-xs uppercase tracking-widest group-hover:text-indigo-200 transition-colors">View All Services</span>
+            
+            <!-- Icon Circle: smaller on mobile, larger on desktop -->
+            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg group-hover:rotate-90 transition-transform duration-500">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+        </button>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
