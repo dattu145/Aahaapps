@@ -31,7 +31,7 @@
         /* Enhanced Menu Animation Styles - Two-Stage Animation */
         /* Stage 0: Collapsed */
         .menu-collapsed {
-            width: 600px;
+            width: 680px; /* Increased from 600px for better spacing */
             max-height: 70px;
             transition: width 1s cubic-bezier(0.5, 1.2, 0.64, 1),
                         max-height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -98,6 +98,7 @@
     <div class="hidden lg:block">
         <!-- Menu Container -->
         <div class="fixed top-8 left-1/2 transform -translate-x-1/2 z-50"
+             @click.outside="if (menuOpen) toggleMenu()"
              :class="{
                  'menu-collapsed': menuState === 'collapsed',
                  'menu-expanding-horizontal': menuState === 'expanding-horizontal',
@@ -397,10 +398,10 @@
             </div>
 
             <!-- Dynamic Grid -->
-            <div class="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div class="grid gap-8 grid-cols-1 min-[451px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 
                 @foreach($services as $index => $service)
-                <div class="group relative h-[350px] rounded-3xl overflow-hidden cursor-pointer"
+                <div class="group relative h-[280px] sm:h-[350px] rounded-3xl overflow-hidden cursor-pointer"
                      x-data="{ show: false }"
                      x-intersect.half="show = true"
                      :class="show ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
@@ -422,11 +423,11 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
                     
                     <!-- Content -->
-                    <div class="absolute bottom-0 left-0 right-0 p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                    <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                         <span class="inline-block px-4 py-1.5 glass-panel rounded-full text-xs font-semibold text-white mb-4">
                             Service
                         </span>
-                        <h3 class="text-3xl font-bold text-white mb-3 leading-tight group-hover:text-indigo-300 transition-colors">
+                        <h3 class="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight group-hover:text-indigo-300 transition-colors">
                             {{ $service->name }}
                         </h3>
                         <p class="text-gray-300 text-sm line-clamp-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
