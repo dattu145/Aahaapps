@@ -9,56 +9,373 @@
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+
+    <!-- MENU STYLES FROM WELCOME.BLADE.PHP (DUPLICATED FOR CONSISTENCY) -->
+    <style>
+        @keyframes fade-in-up {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fade-in-up 1s ease-out forwards;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-500 { animation-delay: 0.5s; }
+
+        /* Glassmorphism for cards */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Enhanced Menu Animation Styles - Two-Stage Animation */
+        /* Stage 0: Collapsed */
+        .menu-collapsed {
+            width: 680px; /* Increased from 600px for better spacing */
+            max-height: 70px;
+            transition: width 1s cubic-bezier(0.5, 1.2, 0.64, 1),
+                        max-height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Stage 1: Expanding Horizontally (1s duration, height stays same) */
+        .menu-expanding-horizontal {
+            width: calc(100vw - 6rem);
+            max-width: 1400px;
+            max-height: 70px; /* SAME as collapsed - no vertical expansion yet! */
+            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Stage 2: Expanded (height increases after 2s delay: 1s horizontal + 1s pause) */
+        .menu-expanded {
+            width: calc(100vw - 6rem);
+            max-width: 1400px;
+            max-height: 900px; /* NOW it expands vertically */
+            transition: max-height 1s cubic-bezier(0.14, 0.10, 1.65, 5) 2s; /* 2s delay = 1s horizontal + 1s pause */
+        }
+
+        .menu-content-hidden {
+            opacity: 0;
+            transform: translateY(-20px); /* Reduced from -20px */
+            pointer-events: none;
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+
+        .menu-content-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            transition: opacity 0.4s ease-out 0.3s, transform 0.4s ease-out 0.3s; /* Faster: 0.4s transition, 0.8s delay */
+        }
+
+        /* Smooth hover transitions */
+        .menu-item-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .menu-item-hover:hover {
+            transform: translateX(4px);
+        }
+        
+        /* CIRCULAR CAROUSEL STYLES - REFINED FOR GAPLESS LOOP AND BOTTOM ORIGIN */
+        .circular-wrapper {
+            position: absolute;
+            bottom: 0; /* Origin anchored at bottom edge */
+            left: 50%;
+            transform: translate(-50%, 50%); /* Move down by 50% so center aligns with bottom edge */
+            width: 120vh;
+            height: 120vh;
+            border-radius: 50%;
+            z-index: 30;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            pointer-events: none;
+        }
+        
+        @media (max-width: 768px) {
+             .circular-wrapper {
+                width: 50vh; /* Reduced for mobile for better fit */
+                height: 50vh;
+                transform: translate(-50%, 50%); 
+             }
+        }
+
+        .circular-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transform-origin: center center;
+            will-change: transform;
+            pointer-events: auto;
+            cursor: grab;
+        }
+
+        .circular-item {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 270px; 
+            height: 340px; 
+            margin-left: -100px; 
+            margin-top: -125px; 
+            /* 
+               Fix for Wobble: 
+               Item 'top' is shifted up by 125px. 
+               Wrapper center is at 55vh.
+               We need pivot to be at (55vh) relative to wrapper top.
+               Relative to Item top, that is (55vh + 125px).
+            */
+            transform-origin: center calc(65vh + 125px); 
+        }
+        
+        @media (max-width: 768px) {
+            .circular-item {
+                 width: 140px; /* Slightly smaller cards on mobile */
+                 height: 180px;
+                 margin-left: -70px;
+                 margin-top: -90px;
+                 /* Mobile: Radius 25vh (half of 50vh) + half height 90px */
+                 transform-origin: center calc(25vh + 90px); 
+            }
+        }
+
+        .circular-item .card-inner {
+            width: 100%;
+            height: 100%;
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Darker border for light card */
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            color: #1a1a1a; /* Dark text for visibility on light exclusion bg */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 24px;
+            position: relative;
+            z-index: 1;
+            isolation: isolate;
+        }
+
+        /* 
+           STRONG BLEND EFFECT: 
+           Exclusion mode with a white background inverts the darks behind it to lights,
+           and inverts lights behind it to darks.
+        */
+        .circular-item .card-inner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: rgba(255, 255, 255, 0.9); /* High opacity white drives the math */
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            mix-blend-mode: exclusion; /* The key effect */
+            transition: all 0.3s ease;
+        }
+
+        .circular-item:hover .card-inner {
+            transform: scale(1.05) translateY(-10px);
+            border-color: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        }
+
+        .circular-item:hover .card-inner::before {
+            background: rgba(255, 255, 255, 1.0); /* Full intensity on hover */
+        }
+
+        /* Scroll Lock Utility */
+        .no-scroll {
+            overflow: hidden;
+            height: 100vh;
+        }
+    </style>
 </head>
-<body class="antialiased bg-gray-50 text-gray-900 font-sans selection:bg-indigo-100 selection:text-indigo-700" x-data="{ sidebarOpen: false }">
+<body class="antialiased bg-gray-50 text-gray-900 font-sans selection:bg-indigo-100 selection:text-indigo-700 overflow-hidden" 
+      id="main-body"
+      x-data="{ 
+          menuOpen: false, 
+          menuState: 'collapsed',
+          sidebarOpen: false,
+          toggleMenu() {
+              if (!this.menuOpen) {
+                  this.menuOpen = true;
+                  this.menuState = 'expanding-horizontal';
+                  setTimeout(() => { this.menuState = 'expanded'; }, 50);
+              } else {
+                  this.menuOpen = false;
+                  this.menuState = 'collapsed';
+              }
+          }
+      }">
 
-    <!-- DESKTOP TOP NAVIGATION -->
-    <!-- Fixed top, visible on lg -->
-    <header class="hidden lg:flex fixed top-0 w-full h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 z-50 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center justify-between">
+    <!-- DESKTOP ANIMATED MENU (lg and above only) -->
+    <div class="hidden lg:block">
+        <!-- Menu Container -->
+        <div class="fixed top-8 left-1/2 transform -translate-x-1/2 z-50"
+             @click.outside="if (menuOpen) toggleMenu()"
+             :class="{
+                 'menu-collapsed': menuState === 'collapsed',
+                 'menu-expanding-horizontal': menuState === 'expanding-horizontal',
+                 'menu-expanded': menuState === 'expanded'
+             }">
             
-            <!-- Logo Area -->
-            <a href="{{ route('home') }}" class="flex items-center gap-2 group">
-                @if(isset($globalSettings['logo']) && $globalSettings['logo'])
-                    <img src="{{ asset('storage/' . $globalSettings['logo']) }}" alt="Logo" class="object-contain transition-transform duration-300 group-hover:scale-105" style="height: {{ $globalSettings['logo_height'] ?? '40' }}px; width: {{ $globalSettings['logo_width'] ?? 'auto' }};">
-                @elseif(isset($globalSettings['logo_url']) && $globalSettings['logo_url'])
-                    <img src="{{ $globalSettings['logo_url'] }}" alt="Logo" class="object-contain transition-transform duration-300 group-hover:scale-105" style="height: {{ $globalSettings['logo_height'] ?? '40' }}px; width: {{ $globalSettings['logo_width'] ?? 'auto' }};">
-                @else
-                    <span class="font-bold text-2xl text-indigo-600 tracking-tight">{{ config('app.name') }}</span>
-                @endif
-            </a>
-
-            <!-- Desktop Menu Links -->
-            <nav class="flex items-center space-x-8">
-                @foreach($globalMenu as $item)
-                    <a href="{{ $item->url }}" wire:navigate
-                       class="text-sm font-medium transition-all duration-200 hover:text-indigo-600 relative group py-2
-                       {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'text-indigo-600' : 'text-gray-600' }}">
-                        {{ $item->label }}
-                        <span class="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'scale-x-100' : '' }}"></span>
-                    </a>
-                @endforeach
+            <!-- Menu Bar -->
+            <div class="bg-white shadow-2xl border border-gray-200 transition-all duration-700 ease-out"
+                 :class="menuOpen ? 'rounded-2xl' : 'rounded-3xl'"
+                 style="will-change: border-radius, width, height;">
                 
-                <!-- Optional CTA Button -->
-                @if(isset($globalSettings['whatsapp_number']))
-                    <a href="https://wa.me/{{ $globalSettings['whatsapp_number'] }}" target="_blank" class="ml-4 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-full shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 transform hover:-translate-y-0.5">
-                        Get Started
-                    </a>
-                @endif
-            </nav>
-        </div>
-    </header>
+                <!-- Collapsed Header Bar -->
+                <div class="flex items-center justify-between px-8 py-5">
+                    <!-- Left: Hamburger + Menu Text -->
+                    <button @click="toggleMenu()" 
+                            class="flex items-center gap-3 text-gray-900 hover:text-indigo-600 transition-all duration-300 group">
+                        <!-- Hamburger Icon -->
+                        <div class="flex flex-col gap-1.5 w-6 transition-transform duration-500" :class="menuOpen ? 'rotate-90' : ''">
+                            <span class="block h-0.5 bg-current transition-all duration-500 ease-out" 
+                                  :class="menuOpen ? 'rotate-45 translate-y-2' : ''"></span>
+                            <span class="block h-0.5 bg-current transition-all duration-500 ease-out" 
+                                  :class="menuOpen ? 'opacity-0' : ''"></span>
+                            <span class="block h-0.5 bg-current transition-all duration-500 ease-out" 
+                                  :class="menuOpen ? '-rotate-45 -translate-y-2' : ''"></span>
+                        </div>
+                        <span class="font-bold text-lg transition-opacity duration-300" x-show="!menuOpen">Menu</span>
+                        <span class="font-bold text-lg transition-opacity duration-300" x-show="menuOpen" x-cloak>Close</span>
+                    </button>
 
-    <!-- TABLET/MOBILE TOP HEADER -->
-    <!-- Visible on mobile/tablet only (hidden on lg if desired, or adjust breakpoints) -->
-    <!-- Since user said "remove left menu and add to top", and "tab view hamburger", we treat lg as desktop breakpoint -->
+                    <!-- Center: Logo -->
+                    <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center">
+                        @if(isset($globalSettings['logo_url']) && $globalSettings['logo_url'])
+                            <img src="{{ $globalSettings['logo_url'] }}" alt="Logo" class="object-contain h-9 transition-all duration-300">
+                        @elseif(isset($globalSettings['logo']) && $globalSettings['logo'])
+                            <img src="{{ asset('storage/' . $globalSettings['logo']) }}" alt="Logo" class="object-contain h-9 transition-all duration-300">
+                        @else
+                            <span class="font-bold text-xl text-indigo-600">{{ config('app.name') }}</span>
+                        @endif
+                    </div>
+
+                    <!-- Right: Contact & Login -->
+                    <div class="flex items-center gap-5">
+                        <a href="/contact" class="text-gray-900 hover:text-indigo-600 transition-all duration-300 font-medium px-3 py-1.5 rounded-lg hover:bg-gray-100">
+                            Contact
+                        </a>
+                        <a href="/login" class="px-6 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-green-500/50 hover:scale-105">
+                            Login
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Expanded Menu Content -->
+                <div x-show="menuOpen" 
+                     x-cloak
+                     :class="menuState === 'expanded' ? 'menu-content-visible' : 'menu-content-hidden'"
+                     class="px-12 pb-12 pt-6">
+                    
+                    <!-- Menu Grid -->
+                    <div class="grid grid-cols-3 gap-14 mt-6">
+                        
+                        <!-- Column 1: Main Menu -->
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6 px-2">Main Menu</h3>
+                            <div class="space-y-6">
+                                @if(isset($globalMenu))
+                                    @foreach($globalMenu->take(4) as $item)
+                                    <a href="{{ $item->url }}" 
+                                       class="block text-gray-900 hover:text-indigo-600 menu-item-hover px-3 py-2 rounded-lg hover:bg-gray-50">
+                                        <div class="flex items-start gap-3">
+                                            <div class="flex-1">
+                                                <div class="font-semibold text-lg">
+                                                    {{ $item->label }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Column 2: More -->
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6 px-2">More</h3>
+                            <div class="space-y-6">
+                                @if(isset($globalMenu))
+                                    @foreach($globalMenu->slice(4, 3) as $item)
+                                    <a href="{{ $item->url }}" 
+                                       class="block text-gray-900 hover:text-indigo-600 menu-item-hover px-3 py-2 rounded-lg hover:bg-gray-50">
+                                        <div class="font-semibold text-lg">
+                                            {{ $item->label }}
+                                        </div>
+                                    </a>
+                                    @endforeach
+                                @endif
+                                
+                                <!-- Social Icons -->
+                                <div class="flex gap-4 mt-10 px-2">
+                                    <a href="#" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-indigo-600 hover:text-white text-gray-600 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                    </a>
+                                    <a href="#" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-indigo-600 hover:text-white text-gray-600 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                    </a>
+                                    <a href="#" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-indigo-600 hover:text-white text-gray-600 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 3: FEATURED -->
+                        <div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
+                            <span class="inline-block px-4 py-1.5 bg-purple-800 text-purple-100 text-xs font-bold rounded-full mb-5">
+                                MILESTONE
+                            </span>
+                            <h3 class="text-2xl font-bold text-white mb-4 leading-tight">
+                                We hit 1600 Members!
+                            </h3>
+                            <button class="mt-6 px-7 py-3 bg-white text-gray-900 font-bold rounded-full hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg">
+                                Join them
+                            </button>
+                            
+                            <!-- Member Avatars -->
+                            <div class="flex -space-x-2 mt-7">
+                                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 border-2 border-white transition-transform duration-300 hover:scale-110 hover:z-10"></div>
+                                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-green-400 to-cyan-500 border-2 border-white transition-transform duration-300 hover:scale-110 hover:z-10"></div>
+                                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-pink-400 to-red-500 border-2 border-white transition-transform duration-300 hover:scale-110 hover:z-10"></div>
+                                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 border-2 border-white transition-transform duration-300 hover:scale-110 hover:z-10"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Bottom Section: Earnings Badge -->
+                    <div class="mt-10 pt-7 border-t border-gray-200 flex items-center justify-between">
+                        <div class="flex items-center gap-3 text-gray-500 text-sm">
+                            <span class="px-4 py-1.5 bg-gray-100 rounded-full font-semibold">Earnings</span>
+                            <span class="text-gray-600">100%</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE/TABLET TOP HEADER -->
     <header class="lg:hidden fixed top-0 w-full h-16 bg-white/90 backdrop-blur-md border-b border-gray-200 z-40 flex items-center justify-between px-4 sm:px-6">
         <!-- Logo -->
-        <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2">
+        <a href="{{ route('home') }}" class="flex items-center gap-2">
            @if(isset($globalSettings['logo']) && $globalSettings['logo'])
-                <img src="{{ asset('storage/' . $globalSettings['logo']) }}" alt="Logo" class="object-contain" style="height: {{ $globalSettings['logo_height'] ?? '32' }}px; width: {{ $globalSettings['logo_width'] ?? 'auto' }};">
+                <img src="{{ asset('storage/' . $globalSettings['logo']) }}" alt="Logo" class="object-contain max-h-9" style="height: auto; width: auto; max-width: 200px;">
             @elseif(isset($globalSettings['logo_url']) && $globalSettings['logo_url'])
-                <img src="{{ $globalSettings['logo_url'] }}" alt="Logo" class="object-contain" style="height: {{ $globalSettings['logo_height'] ?? '32' }}px; width: {{ $globalSettings['logo_width'] ?? 'auto' }};">
+                <img src="{{ $globalSettings['logo_url'] }}" alt="Logo" class="object-contain max-h-9" style="height: auto; width: auto; max-width: 200px;">
             @else
                 <span class="font-bold text-xl text-indigo-600">{{ config('app.name') }}</span>
             @endif
@@ -73,7 +390,6 @@
     </header>
 
     <!-- RIGHT SLIDE-OVER DRAWER (Mobile/Tablet) -->
-    <!-- Simplified structure for reliability -->
     <div class="relative z-50 lg:hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" 
          x-show="sidebarOpen" 
          style="display: none;">
@@ -102,7 +418,7 @@
              <div class="h-full flex flex-col overflow-y-scroll py-6 bg-white shadow-xl">
                 <div class="px-4 sm:px-6 border-b border-gray-100 pb-4 flex items-center justify-between">
                     <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Menu</h2>
-                    <button type="button" class="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" @click="sidebarOpen = false">
+                    <button type="button" class="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo- 500" @click="sidebarOpen = false">
                         <span class="sr-only">Close panel</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -112,16 +428,18 @@
 
                 <div class="mt-6 relative flex-1 px-4 sm:px-6">
                     <nav class="flex flex-col space-y-4">
-                        @foreach($globalMenu as $item)
-                            <a href="{{ $item->url }}" wire:navigate
-                               class="group flex items-center px-4 py-3 text-base font-medium rounded-xl transition-all duration-200
-                               {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900' }}">
-                                {{ $item->label }}
-                                <span class="ml-auto opacity-0 group-hover:opacity-100 text-indigo-400 transition-opacity">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                </span>
-                            </a>
-                        @endforeach
+                        @if(isset($globalMenu))
+                            @foreach($globalMenu as $item)
+                                <a href="{{ $item->url }}"
+                                   class="group flex items-center px-4 py-3 text-base font-medium rounded-xl transition-all duration-200
+                                   {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900' }}">
+                                    {{ $item->label }}
+                                    <span class="ml-auto opacity-0 group-hover:opacity-100 text-indigo-400 transition-opacity">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </span>
+                                </a>
+                            @endforeach
+                        @endif
                     </nav>
                     
                     @if(isset($globalSettings['whatsapp_number']))
@@ -136,17 +454,10 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT WRAPPER -->
-    <!-- Left margin removed (lg:ml-64 removed). Top padding adjusted for fixed header -->
-    <main class="min-h-screen pt-16 lg:pt-20 bg-gray-50 transition-all duration-300">
-        {{ $slot }}
-    </main>
-
     <!-- MOBILE BOTTOM NAVBAR -->
-    <!-- Kept as requested -->
     <nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-xl border-t border-gray-200 z-40 flex items-center justify-around pb-safe shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
         @foreach($globalMenu->take(4) as $item)
-            <a href="{{ $item->url }}" wire:navigate class="group flex flex-col items-center justify-center w-full h-full space-y-1 relative
+            <a href="{{ $item->url }}" class="group flex flex-col items-center justify-center w-full h-full space-y-1 relative
                {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600' }}">
                 
                 {{-- Active Indicator Line --}}
@@ -162,6 +473,12 @@
             </a>
         @endforeach
     </nav>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <!-- Left margin removed (lg:ml-64 removed). Top padding adjusted for fixed header -->
+    <main class="min-h-screen pt-16 lg:pt-28 bg-gray-50 transition-all duration-300">
+        {{ $slot }}
+    </main>
 
     @livewireScripts
 </body>

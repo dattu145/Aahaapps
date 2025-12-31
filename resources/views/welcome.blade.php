@@ -82,8 +82,8 @@
             bottom: 0; /* Origin anchored at bottom edge */
             left: 50%;
             transform: translate(-50%, 50%); /* Move down by 50% so center aligns with bottom edge */
-            width: 60vh;
-            height: 60vh;
+            width: 120vh;
+            height: 120vh;
             border-radius: 50%;
             z-index: 30;
             display: flex;
@@ -115,8 +115,8 @@
             position: absolute;
             top: 0;
             left: 50%;
-            width: 200px; 
-            height: 250px; 
+            width: 270px; 
+            height: 340px; 
             margin-left: -100px; 
             margin-top: -125px; 
             /* 
@@ -126,7 +126,7 @@
                We need pivot to be at (55vh) relative to wrapper top.
                Relative to Item top, that is (55vh + 125px).
             */
-            transform-origin: center calc(30vh + 125px); 
+            transform-origin: center calc(65vh + 125px); 
         }
         
         @media (max-width: 768px) {
@@ -143,27 +143,48 @@
         .circular-item .card-inner {
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Darker border for light card */
             border-radius: 20px;
             overflow: hidden;
             transition: all 0.3s ease;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            color: white;
+            color: #1a1a1a; /* Dark text for visibility on light exclusion bg */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             padding: 24px;
+            position: relative;
+            z-index: 1;
+            isolation: isolate;
+        }
+
+        /* 
+           STRONG BLEND EFFECT: 
+           Exclusion mode with a white background inverts the darks behind it to lights,
+           and inverts lights behind it to darks.
+        */
+        .circular-item .card-inner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: rgba(255, 255, 255, 0.9); /* High opacity white drives the math */
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            mix-blend-mode: exclusion; /* The key effect */
+            transition: all 0.3s ease;
         }
 
         .circular-item:hover .card-inner {
-            background: rgba(255, 255, 255, 0.25);
             transform: scale(1.05) translateY(-10px);
-            border-color: rgba(255, 255, 255, 0.6);
+            border-color: rgba(0, 0, 0, 0.3);
             box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        }
+
+        .circular-item:hover .card-inner::before {
+            background: rgba(255, 255, 255, 1.0); /* Full intensity on hover */
         }
 
         /* Scroll Lock Utility */
@@ -256,17 +277,17 @@
                     <!-- Menu Grid -->
                     <div class="grid grid-cols-3 gap-14 mt-6">
                         
-                        <!-- Column 1: OUR PRODUCTS -->
+                        <!-- Column 1: Main Menu -->
                         <div class="space-y-3">
-                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6 px-2">Our Products</h3>
+                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6 px-2">Main Menu</h3>
                             <div class="space-y-6">
-                                @foreach($services->take(4) as $service)
-                                <a href="{{ $service->login_url ?: '#' }}" 
+                                @foreach($globalMenu->take(4) as $item)
+                                <a href="{{ $item->url }}" 
                                    class="block text-gray-900 hover:text-indigo-600 menu-item-hover px-3 py-2 rounded-lg hover:bg-gray-50">
                                     <div class="flex items-start gap-3">
                                         <div class="flex-1">
                                             <div class="font-semibold text-lg">
-                                                {{ $service->name }}
+                                                {{ $item->label }}
                                             </div>
                                         </div>
                                     </div>
@@ -275,15 +296,15 @@
                             </div>
                         </div>
 
-                        <!-- Column 2: EXPLORE -->
+                        <!-- Column 2: More -->
                         <div class="space-y-3">
-                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6 px-2">Explore</h3>
+                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6 px-2">More</h3>
                             <div class="space-y-6">
-                                @foreach($services->slice(4, 3) as $service)
-                                <a href="{{ $service->login_url ?: '#' }}" 
+                                @foreach($globalMenu->slice(4, 3) as $item)
+                                <a href="{{ $item->url }}" 
                                    class="block text-gray-900 hover:text-indigo-600 menu-item-hover px-3 py-2 rounded-lg hover:bg-gray-50">
                                     <div class="font-semibold text-lg">
-                                        {{ $service->name }}
+                                        {{ $item->label }}
                                     </div>
                                 </a>
                                 @endforeach
@@ -399,16 +420,18 @@
 
                 <div class="mt-6 relative flex-1 px-4 sm:px-6">
                     <nav class="flex flex-col space-y-4">
-                        @foreach($globalMenu as $item)
-                            <a href="{{ $item->url }}"
-                               class="group flex items-center px-4 py-3 text-base font-medium rounded-xl transition-all duration-200
-                               {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900' }}">
-                                {{ $item->label }}
-                                <span class="ml-auto opacity-0 group-hover:opacity-100 text-indigo-400 transition-opacity">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                </span>
-                            </a>
-                        @endforeach
+                        @if(isset($globalMenu))
+                            @foreach($globalMenu as $item)
+                                <a href="{{ $item->url }}"
+                                   class="group flex items-center px-4 py-3 text-base font-medium rounded-xl transition-all duration-200
+                                   {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900' }}">
+                                    {{ $item->label }}
+                                    <span class="ml-auto opacity-0 group-hover:opacity-100 text-indigo-400 transition-opacity">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </span>
+                                </a>
+                            @endforeach
+                        @endif
                     </nav>
                     
                     @if(isset($globalSettings['whatsapp_number']))
@@ -425,22 +448,24 @@
 
     <!-- MOBILE BOTTOM NAVBAR -->
     <nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-xl border-t border-gray-200 z-40 flex items-center justify-around pb-safe shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
-        @foreach($globalMenu->take(4) as $item)
-            <a href="{{ $item->url }}" class="group flex flex-col items-center justify-center w-full h-full space-y-1 relative
-               {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600' }}">
-                
-                {{-- Active Indicator Line --}}
-                @if(request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')))
-                    <span class="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-indigo-600 rounded-full"></span>
-                @endif
+        @if(isset($globalMenu))
+            @foreach($globalMenu->take(4) as $item)
+                <a href="{{ $item->url }}" class="group flex flex-col items-center justify-center w-full h-full space-y-1 relative
+                {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600' }}">
+                    
+                    {{-- Active Indicator Line --}}
+                    @if(request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')))
+                        <span class="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-indigo-600 rounded-full"></span>
+                    @endif
 
-                <div class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:-translate-y-1">
-                     {{-- Simple Icon Logic (First Char) - Replace with actual icons later if needed --}}
-                    <span class="text-sm font-bold uppercase">{{ substr($item->label, 0, 1) }}</span>
-                </div>
-                <span class="text-[10px] font-medium tracking-wide">{{ $item->label }}</span>
-            </a>
-        @endforeach
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:-translate-y-1">
+                        {{-- Simple Icon Logic (First Char) - Replace with actual icons later if needed --}}
+                        <span class="text-sm font-bold uppercase">{{ substr($item->label, 0, 1) }}</span>
+                    </div>
+                    <span class="text-[10px] font-medium tracking-wide">{{ $item->label }}</span>
+                </a>
+            @endforeach
+        @endif
     </nav>
 
     <!-- VIDEO HERO SECTION -->
@@ -495,9 +520,14 @@
                 @foreach($loopServices as $index => $service)
                     <div class="circular-item">
                         <div class="card-inner group">
+                            <!-- Title: Inherits dark color from parent -->
                             <h3 class="text-xl font-bold mb-2 group-hover:scale-110 transition-transform">{{ $service->name }}</h3>
-                            <div class="w-10 h-1 bg-white/50 rounded mt-2 mb-4"></div>
-                            <span class="text-xs uppercase tracking-widest border border-white/30 px-3 py-1 rounded-full group-hover:bg-white group-hover:text-black transition-colors">Explore</span>
+                            
+                            <!-- Divider: Dark for contrast on light bg -->
+                            <div class="w-10 h-1 bg-black/20 rounded mt-2 mb-4"></div>
+                            
+                            <!-- Button: Dark borders and text -->
+                            <span class="text-xs uppercase tracking-widest border border-black/20 px-3 py-1 rounded-full group-hover:bg-black group-hover:text-white transition-colors">Explore</span>
                         </div>
                     </div>
                 @endforeach
