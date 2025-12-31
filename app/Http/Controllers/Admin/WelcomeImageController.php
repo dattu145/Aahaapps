@@ -44,23 +44,25 @@ class WelcomeImageController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'image' => 'required|image|max:5120', // 5MB max
-            'sort_order' => 'integer|nullable',
-            'is_active' => 'boolean',
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'sort_order' => 'nullable|integer',
+            'target_url' => 'nullable|url',
+            'opacity' => 'nullable|integer|min:0|max:100',
         ]);
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('welcome_images', 'public');
-            
-            WelcomeImage::create([
-                'image_path' => $path,
-                'sort_order' => $request->sort_order ?? 0,
-                'is_active' => $request->has('is_active'),
-            ]);
-        }
+        $imagePath = $request->file('image')->store('welcome_images', 'public');
 
-        return redirect()->route('admin.welcome-images.index')->with('success', 'Image uploaded successfully.');
+        WelcomeImage::create([
+            'image_path' => $imagePath,
+            'sort_order' => $request->sort_order ?? 0,
+            'is_active' => $request->has('is_active'),
+            'target_url' => $request->target_url,
+            'opacity' => $request->opacity ?? 100,
+        ]);
+
+        return redirect()->route('admin.welcome-images.index')
+            ->with('success', 'Image uploaded successfully.');
     }
 
     /**
@@ -76,20 +78,23 @@ class WelcomeImageController extends Controller
      */
     public function update(Request $request, WelcomeImage $welcomeImage)
     {
-        $validated = $request->validate([
-            'image' => 'nullable|image|max:5120',
-            'sort_order' => 'integer|nullable',
-            'is_active' => 'boolean',
+        $request->validate([
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'sort_order' => 'nullable|integer',
+            'target_url' => 'nullable|url',
+            'opacity' => 'nullable|integer|min:0|max:100',
         ]);
 
         $data = [
             'sort_order' => $request->sort_order ?? 0,
             'is_active' => $request->has('is_active'),
+            'target_url' => $request->target_url,
+            'opacity' => $request->opacity ?? 100,
         ];
 
         if ($request->hasFile('image')) {
             // Delete old image
-            if ($welcomeImage->image_path && Storage::disk('public')->exists($welcomeImage->image_path)) {
+            if (Storage::disk('public')->exists($welcomeImage->image_path)) {
                 Storage::disk('public')->delete($welcomeImage->image_path);
             }
             $data['image_path'] = $request->file('image')->store('welcome_images', 'public');

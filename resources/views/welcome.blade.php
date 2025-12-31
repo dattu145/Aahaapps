@@ -201,13 +201,14 @@
             width: 220px;
             height: 100vh; /* Fixed height to viewport */
             overflow: hidden;
-            z-index: 15;
+            z-index: 50; /* Increased to ensure it's above hero text for hover */
             opacity: 1;
-            pointer-events: none;
+            pointer-events: none; /* Let clicks pass through wrapper... */
         }
 
         /* The track that contains all images - FIXED */
         .scroll-track {
+            pointer-events: auto; /* ...but catch them on the images/track */
             display: flex;
             flex-direction: column;
             width: 100%;
@@ -294,7 +295,8 @@
     <!-- DESKTOP ANIMATED MENU (lg and above only) -->
     <div class="hidden lg:block">
         <!-- Menu Container -->
-        <div class="fixed top-8 left-1/2 transform -translate-x-1/2 z-50"
+        <div class="absolute top-8 left-1/2 transform -translate-x-1/2 z-[9999]"
+             style="z-index: 9999;"
              @click.outside="if (menuOpen) toggleMenu()"
              :class="{
                  'menu-collapsed': menuState === 'collapsed',
@@ -476,7 +478,7 @@
              @click="sidebarOpen = false"></div>
 
         <!-- Panel -->
-        <div class="fixed inset-y-0 right-0 z-50 w-full max-w-xs bg-white shadow-2xl transform transition-transform"
+        <div class="fixed inset-y-0 right-0 z-[100] w-full max-w-xs bg-white shadow-2xl transform transition-transform"
              x-show="sidebarOpen"
              x-transition:enter="transform transition ease-in-out duration-300"
              x-transition:enter-start="translate-x-full"
@@ -570,7 +572,17 @@
                 @foreach($activeImages as $img)
                     <div class="scroll-image-container">
                         @if(isset($img->image_path) && $img->image_path)
-                            <img src="{{ asset('storage/' . $img->image_path) }}" alt="Portfolio">
+                            @if(isset($img->target_url) && $img->target_url)
+                                <a href="{{ $img->target_url }}" target="_blank" class="block w-full h-full"> 
+                                    <img src="{{ asset('storage/' . $img->image_path) }}" 
+                                         alt="Portfolio"
+                                         style="opacity: {{ ($img->opacity ?? 100) / 100 }};">
+                                </a>
+                            @else
+                                <img src="{{ asset('storage/' . $img->image_path) }}" 
+                                     alt="Portfolio"
+                                     style="opacity: {{ ($img->opacity ?? 100) / 100 }};">
+                            @endif
                         @else
                             <img src="{{ $img->fallback }}" alt="Portfolio Placeholder">
                         @endif
@@ -581,7 +593,17 @@
                 @foreach($activeImages as $img)
                     <div class="scroll-image-container">
                         @if(isset($img->image_path) && $img->image_path)
-                            <img src="{{ asset('storage/' . $img->image_path) }}" alt="Portfolio">
+                            @if(isset($img->target_url) && $img->target_url)
+                                <a href="{{ $img->target_url }}" target="_blank" class="block w-full h-full">
+                                    <img src="{{ asset('storage/' . $img->image_path) }}" 
+                                         alt="Portfolio"
+                                         style="opacity: {{ ($img->opacity ?? 100) / 100 }};">
+                                </a>
+                            @else
+                                <img src="{{ asset('storage/' . $img->image_path) }}" 
+                                     alt="Portfolio"
+                                     style="opacity: {{ ($img->opacity ?? 100) / 100 }};">
+                            @endif
                         @else
                             <img src="{{ $img->fallback }}" alt="Portfolio Placeholder">
                         @endif
@@ -730,8 +752,8 @@
     <!-- UNIFIED Fixed Floating Button -->
     <style>
         #fixed-services-btn {
-            position: fixed;
-            z-index: 2147483647;
+            position: absolute;
+            z-index: 60; /* Higher than marquee (50), lower than menu (9999) */
             right: 20px;
             top: 90px;
             transition: all 0.3s ease;
