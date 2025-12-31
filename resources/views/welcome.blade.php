@@ -192,6 +192,84 @@
             overflow: hidden;
             height: 100vh;
         }
+
+        /* VERTICAL MARQUEE STYLES - FIXED */
+        .scroll-wrapper {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100vh; /* Fixed height to viewport */
+            overflow: hidden;
+            z-index: 15;
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        /* The track that contains all images - FIXED */
+        .scroll-track {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            will-change: transform;
+            /* Animation duration from CMS - default to 40s */
+            animation: scrollUp var(--marquee-duration, 40s) linear infinite;
+        }
+
+        .scroll-track:hover {
+            animation-play-state: paused;
+        }
+
+        /* Individual image container */
+        .scroll-image-container {
+            width: 100%;
+            flex-shrink: 0; /* Prevent images from shrinking */
+            transition: all 0.5s ease;
+            opacity: 1;
+            filter: none;
+            margin-bottom: 20px; /* Space between images */
+        }
+
+        .scroll-image-container:last-child {
+            margin-bottom: 0; /* No margin on last item */
+        }
+
+        .scroll-image-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: block;
+            object-fit: cover;
+        }
+
+        /* Hover effect on individual item */
+        .scroll-image-container:hover {
+            opacity: 1;
+            filter: grayscale(0%);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        /* Keyframe animation - FIXED for seamless loop */
+        @keyframes scrollUp {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-50%); /* Move up by exactly half of duplicated content */
+            }
+        }
+
+        /* Mobile Adjustment */
+        @media (max-width: 768px) {
+            .scroll-wrapper {
+                width: 140px;
+            }
+            .scroll-image-container {
+                margin-bottom: 15px;
+            }
+        }
     </style>
 </head>
 <body class="antialiased bg-gray-50 text-gray-900 font-sans selection:bg-indigo-100 selection:text-indigo-700 overflow-hidden" 
@@ -210,7 +288,8 @@
                   this.menuState = 'collapsed';
               }
           }
-      }">
+      }"
+      style="--marquee-duration: {{ \App\Models\Setting::get('marquee_speed', 40) }}s;">
 
     <!-- DESKTOP ANIMATED MENU (lg and above only) -->
     <div class="hidden lg:block">
@@ -276,8 +355,7 @@
                     
                     <!-- Menu Grid -->
                     <div class="grid grid-cols-3 gap-14 mt-6">
-                        
-                        <!-- Column 1: Main Menu -->
+
                         <div class="space-y-3">
                             <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6 px-2">Main Menu</h3>
                             <div class="space-y-6">
@@ -470,6 +548,48 @@
 
     <!-- VIDEO HERO SECTION -->
     <div class="relative w-full h-screen overflow-hidden">
+        <!-- VERTICAL MARQUEE (Inside Hero) - FIXED -->
+        <div class="scroll-wrapper">
+            <div class="scroll-track">
+                @php
+                    // Get active images from CMS
+                    $activeImages = isset($welcomeImages) && $welcomeImages->count() > 0 
+                        ? $welcomeImages 
+                        : collect([
+                            (object)['image_path' => null, 'fallback' => 'https://picsum.photos/300/400?random=1'],
+                            (object)['image_path' => null, 'fallback' => 'https://picsum.photos/300/500?random=2'],
+                        ]);
+
+                    // If we have only 1 image, duplicate it to create at least 2 for proper animation
+                    if ($activeImages->count() === 1) {
+                        $activeImages = $activeImages->merge($activeImages);
+                    }
+                @endphp
+
+                {{-- First Set --}}
+                @foreach($activeImages as $img)
+                    <div class="scroll-image-container">
+                        @if(isset($img->image_path) && $img->image_path)
+                            <img src="{{ asset('storage/' . $img->image_path) }}" alt="Portfolio">
+                        @else
+                            <img src="{{ $img->fallback }}" alt="Portfolio Placeholder">
+                        @endif
+                    </div>
+                @endforeach
+
+                {{-- Second Set (Duplicate for seamless loop) --}}
+                @foreach($activeImages as $img)
+                    <div class="scroll-image-container">
+                        @if(isset($img->image_path) && $img->image_path)
+                            <img src="{{ asset('storage/' . $img->image_path) }}" alt="Portfolio">
+                        @else
+                            <img src="{{ $img->fallback }}" alt="Portfolio Placeholder">
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
         <!-- Background Video -->
         <video class="absolute top-0 left-0 w-full h-full object-cover z-0" autoplay muted loop playsinline>
             <source src="{{ asset('demovideo.mp4') }}" type="video/mp4">
@@ -494,14 +614,8 @@
                 <p class="text-xl md:text-2xl text-white max-w-4xl mx-auto font-light leading-relaxed mb-10 opacity-0 animate-fade-in-up delay-300 pointer-events-auto drop-shadow-md">
                     Igniting <span class="font-semibold text-white">digital excellence</span> with premium Video & Web solutions.
                 </p>
-
-
             </div>
         </div>
-
-
-
-
 
         <!-- Circular Draggable Services Loop -->
         <div class="circular-wrapper pointer-events-auto" id="circularWrapper">

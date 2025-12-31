@@ -18,6 +18,7 @@ class SettingController extends Controller
             'logo_width' => Setting::get('logo_width'),
             'whatsapp_number' => Setting::get('whatsapp_number'),
             'min_login_url' => Setting::get('min_login_url'),
+            'marquee_speed' => Setting::get('marquee_speed'),
         ]);
     }
 
@@ -30,6 +31,7 @@ class SettingController extends Controller
             'logo_width' => 'nullable|string|max:10', // Allow "auto" or number
             'whatsapp_number' => 'nullable|string|max:20',
             'min_login_url' => 'nullable|url',
+            'marquee_speed' => 'nullable|integer|min:5|max:200',
         ]);
 
         if ($request->has('logo_height')) {

@@ -13,9 +13,10 @@ class PublicController extends Controller
         // We use 'welcome.blade.php' for the "/" route to support the new custom design.
         // We still fetch content if needed, but the view is specific.
         $services = \App\Models\Service::active()->ordered()->get();
+        $welcomeImages = \App\Models\WelcomeImage::active()->ordered()->get();
         // $page = Page::where('slug', 'home')->where('is_active', true)->first(); 
 
-        return view('welcome', compact('services'));
+        return view('welcome', compact('services', 'welcomeImages'));
     }
 
     public function show($slug)
