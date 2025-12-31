@@ -25,7 +25,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::resource('pages', \App\Http\Controllers\Admin\PageController::class);
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
     Route::post('welcome-images/settings', [\App\Http\Controllers\Admin\WelcomeImageController::class, 'updateSettings'])->name('welcome-images.settings');
+    Route::post('welcome-images/settings', [\App\Http\Controllers\Admin\WelcomeImageController::class, 'updateSettings'])->name('welcome-images.settings');
     Route::resource('welcome-images', \App\Http\Controllers\Admin\WelcomeImageController::class);
+    Route::resource('circular-items', \App\Http\Controllers\Admin\CircularItemController::class);
 });
 
 require __DIR__.'/auth.php';

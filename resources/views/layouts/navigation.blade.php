@@ -27,6 +27,9 @@
                     <x-nav-link :href="route('admin.welcome-images.index')" :active="request()->routeIs('admin.welcome-images.*')">
                         {{ __('Welcome Images') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('admin.circular-items.index')" :active="request()->routeIs('admin.circular-items.*')">
+                        {{ __('Circular Items') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
                         {{ __('Settings') }}
                     </x-nav-link>
@@ -96,6 +99,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.welcome-images.index')" :active="request()->routeIs('admin.welcome-images.*')">
                 {{ __('Welcome Images') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.circular-items.index')" :active="request()->routeIs('admin.circular-items.*')">
+                {{ __('Circular Items') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
                 {{ __('Settings') }}

@@ -32,7 +32,7 @@
         /* Stage 0: Collapsed */
         .menu-collapsed {
             width: 680px; /* Increased from 600px for better spacing */
-            max-height: 70px;
+            max-height: 50px;
             transition: width 1s cubic-bezier(0.5, 1.2, 0.64, 1),
                         max-height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
@@ -41,7 +41,7 @@
         .menu-expanding-horizontal {
             width: calc(100vw - 6rem);
             max-width: 1400px;
-            max-height: 70px; /* SAME as collapsed - no vertical expansion yet! */
+            max-height: 50px; /* SAME as collapsed - no vertical expansion yet! */
             transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
@@ -82,8 +82,8 @@
             bottom: 0; /* Origin anchored at bottom edge */
             left: 50%;
             transform: translate(-50%, 50%); /* Move down by 50% so center aligns with bottom edge */
-            width: 120vh;
-            height: 120vh;
+            width: 90vh;
+            height: 90vh;
             border-radius: 50%;
             z-index: 30;
             display: flex;
@@ -119,14 +119,7 @@
             height: 340px; 
             margin-left: -100px; 
             margin-top: -125px; 
-            /* 
-               Fix for Wobble: 
-               Item 'top' is shifted up by 125px. 
-               Wrapper center is at 55vh.
-               We need pivot to be at (55vh) relative to wrapper top.
-               Relative to Item top, that is (55vh + 125px).
-            */
-            transform-origin: center calc(65vh + 125px); 
+            transform-origin: center calc(45vh + 270px); 
         }
         
         @media (max-width: 768px) {
@@ -135,7 +128,6 @@
                  height: 180px;
                  margin-left: -70px;
                  margin-top: -90px;
-                 /* Mobile: Radius 25vh (half of 50vh) + half height 90px */
                  transform-origin: center calc(25vh + 90px); 
             }
         }
@@ -159,12 +151,6 @@
             z-index: 1;
             isolation: isolate;
         }
-
-        /* 
-           STRONG BLEND EFFECT: 
-           Exclusion mode with a white background inverts the darks behind it to lights,
-           and inverts lights behind it to darks.
-        */
         .circular-item .card-inner::before {
             content: '';
             position: absolute;
@@ -310,7 +296,7 @@
                  style="will-change: border-radius, width, height;">
                 
                 <!-- Collapsed Header Bar -->
-                <div class="flex items-center justify-between px-8 py-5">
+                <div class="flex items-center justify-between px-8 py-3">
                     <!-- Left: Hamburger + Menu Text -->
                     <button @click="toggleMenu()" 
                             class="flex items-center gap-3 text-gray-900 hover:text-indigo-600 transition-all duration-300 group">
@@ -441,7 +427,7 @@
     </div>
 
     <!-- MOBILE/TABLET TOP HEADER -->
-    <header class="lg:hidden fixed top-0 w-full h-16 bg-white/90 backdrop-blur-md border-b border-gray-200 z-40 flex items-center justify-between px-4 sm:px-6">
+    <header class="lg:hidden fixed top-0 w-full h-16 bg-white/90 backdrop-blur-md border-b border-gray-200 z-80 flex items-center justify-between px-4 sm:px-6">
         <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2">
            @if(isset($globalSettings['logo']) && $globalSettings['logo'])
@@ -551,7 +537,7 @@
     <!-- VIDEO HERO SECTION -->
     <div class="relative w-full h-screen overflow-hidden">
         <!-- VERTICAL MARQUEE (Inside Hero) - FIXED -->
-        <div class="scroll-wrapper">
+        <div class="scroll-wrapper hidden lg:block">
             <div class="scroll-track">
                 @php
                     // Get active images from CMS
@@ -643,28 +629,51 @@
         <div class="circular-wrapper pointer-events-auto" id="circularWrapper">
             <div class="circular-container" id="circularContainer">
                 @php
-                    $loopServices = collect();
-                    if (isset($services) && $services->count() > 0) {
-                        $loopServices = $services;
+                    $loopItems = collect();
+                    // If no circular items, we might want to show services or nothing? 
+                    // Assuming we show circular items if they exist.
+                    $sourceItems = (isset($circularItems) && $circularItems->count() > 0) ? $circularItems : collect();
+                    
+                    if ($sourceItems->count() > 0) {
+                        $loopItems = $sourceItems;
                         $iterations = 0;
-                        while($loopServices->count() < 15 && $iterations < 20) {
-                            $loopServices = $loopServices->merge($services);
+                        // Ensure enough items to fill the circle
+                        while($loopItems->count() < 15 && $iterations < 20) {
+                            $loopItems = $loopItems->merge($sourceItems);
                             $iterations++;
                         }
+                    } else {
+                        // Fallback to services if no circular items (Preserving original logic style or empty)
+                        // For this task, let's assume empty if no items, or maybe fallback? 
+                        // User specifically asked for this feature, so let's stick to circularItems.
+                        // But to avoid empty space if user hasn't added items yet, maybe keep services as fallback?
+                        // Let's stick to strict circularItems as requested.
                     }
                 @endphp
-                @foreach($loopServices as $index => $service)
+                @foreach($loopItems as $index => $item)
                     <div class="circular-item">
-                        <div class="card-inner group">
+                        <a href="{{ $item->link ?? '#' }}" target="_blank" class="card-inner group block w-full h-full text-decoration-none">
                             <!-- Title: Inherits dark color from parent -->
-                            <h3 class="text-xl font-bold mb-2 group-hover:scale-110 transition-transform">{{ $service->name }}</h3>
+                            <h3 class="text-xl font-bold mb-2 group-hover:scale-110 transition-transform">{{ $item->title }}</h3>
                             
+                            @if($item->description)
+                            <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ $item->description }}</p>
+                            @endif
+
                             <!-- Divider: Dark for contrast on light bg -->
-                            <div class="w-10 h-1 bg-black/20 rounded mt-2 mb-4"></div>
+                            <div class="w-10 h-1 bg-black/20 rounded mt-2 mb-4 mx-auto"></div>
                             
                             <!-- Button: Dark borders and text -->
-                            <span class="text-xs uppercase tracking-widest border border-black/20 px-3 py-1 rounded-full group-hover:bg-black group-hover:text-white transition-colors">Explore</span>
-                        </div>
+                            <span class="explore-btn relative z-10 inline-block cursor-pointer text-xs uppercase tracking-widest border border-black/20 px-3 py-1 rounded-full bg-transparent text-black transition-colors duration-[400ms]">
+                                {{ $item->button_text }}
+                            </span>
+                            <style>
+                                .explore-btn:hover {
+                                    background-color: black !important;
+                                    color: white !important;
+                                }
+                            </style>
+                        </a>
                     </div>
                 @endforeach
             </div>
@@ -816,7 +825,7 @@
             let lastX = 0;
             let velocity = 0;
             const friction = 0.95;
-            let autoRotateSpeed = 0.03; // Slower auto rotate for elegance
+            let autoRotateSpeed = 0.25; // Slower auto rotate for elegance
 
             function animate() {
                 if (!isDragging) {
@@ -855,18 +864,27 @@
                 const deltaX = e.clientX - lastX;
                 lastX = e.clientX;
                 
-                // Inverted control or natural? 
-                // Drag LEFT -> Rotate Counter Clockwise? 
-                // Testing: Drag Left (negative delta) moves things left.
-                // Rotation negative moves items CCW. 
-                // So deltaX matches rotation direction intuitively for bottom arc.
-                
                 const rotateDelta = deltaX * 0.1;
                 targetRotation += rotateDelta;
                 velocity = rotateDelta;
                 
                 // Update auto speed to match throw direction
-                autoRotateSpeed = (velocity > 0 ? 0.05 : -0.05);
+                autoRotateSpeed = (velocity > 0 ? 0.08 : -0.08);
+            });
+
+            // Pause on Hover
+            let isHovered = false;
+            items.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    isHovered = true;
+                    autoRotateSpeed = 0; // Stop rotation immediately
+                    velocity = 0;
+                });
+                item.addEventListener('mouseleave', () => {
+                    isHovered = false;
+                    // Resume rotation based on last direction or default positive
+                    autoRotateSpeed = 0.08; 
+                });
             });
 
             // Touch

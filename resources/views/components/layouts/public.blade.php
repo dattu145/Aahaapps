@@ -35,8 +35,8 @@
         /* Enhanced Menu Animation Styles - Two-Stage Animation */
         /* Stage 0: Collapsed */
         .menu-collapsed {
-            width: 680px; /* Increased from 600px for better spacing */
-            max-height: 70px;
+            width: 750px; /* Increased for better gap between Menu and Contact */
+            max-height: 60px;
             transition: width 1s cubic-bezier(0.5, 1.2, 0.64, 1),
                         max-height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
@@ -45,7 +45,7 @@
         .menu-expanding-horizontal {
             width: calc(100vw - 6rem);
             max-width: 1400px;
-            max-height: 70px; /* SAME as collapsed - no vertical expansion yet! */
+            max-height: 60px; /* SAME as collapsed - no vertical expansion yet! */
             transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
@@ -233,7 +233,7 @@
                  style="will-change: border-radius, width, height;">
                 
                 <!-- Collapsed Header Bar -->
-                <div class="flex items-center justify-between px-8 py-5">
+                <div class="flex items-center justify-between px-8 py-3">
                     <!-- Left: Hamburger + Menu Text -->
                     <button @click="toggleMenu()" 
                             class="flex items-center gap-3 text-gray-900 hover:text-indigo-600 transition-all duration-300 group">
