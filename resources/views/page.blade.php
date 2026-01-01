@@ -10,8 +10,44 @@
 
             <h1 class="text-3xl md:text-5xl font-extrabold mb-6 text-gray-900 tracking-tight leading-tight">{{ $page->title }}</h1>
             
-            <div class="prose prose-lg max-w-none mb-12 text-gray-600 leading-relaxed">
-                {!! nl2br(e($page->content)) !!}
+            <div class="cms-content max-w-none mb-12 text-gray-600 leading-relaxed">
+                <style>
+                    /* Replicate Editor Styles for 1:1 Match */
+                    .cms-content h1 { font-size: 2.25rem !important; font-weight: 800 !important; margin-bottom: 1rem !important; line-height: 1.2 !important; color: #111827; }
+                    .cms-content h2 { font-size: 1.875rem !important; font-weight: 700 !important; margin-bottom: 0.75rem !important; line-height: 1.3 !important; color: #1f2937; }
+                    .cms-content h3 { font-size: 1.5rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; line-height: 1.4 !important; color: #374151; }
+                    .cms-content h4 { font-size: 1.25rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; color: #374151; }
+                    .cms-content h5 { font-size: 1.125rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; color: #374151; }
+                    .cms-content h6 { font-size: 1rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; color: #374151; }
+                    .cms-content p { margin-bottom: 1rem !important; }
+
+                    /* Lists */
+                    .cms-content ul { list-style: disc !important; padding-left: 2rem !important; margin-bottom: 1rem !important; }
+                    .cms-content ul ul { list-style: circle !important; }
+                    .cms-content ul ul ul { list-style: square !important; }
+                    .cms-content ol { list-style: decimal !important; padding-left: 2rem !important; margin-bottom: 1rem !important; }
+                    .cms-content ol ol { list-style: lower-alpha !important; }
+                    .cms-content ol ol ol { list-style: lower-roman !important; }
+                    .cms-content li { display: list-item !important; margin-bottom: 0.25rem !important; }
+
+                    /* Force responsive images/videos/iframes */
+                    .cms-content img, .cms-content video, .cms-content iframe {
+                        max-width: 100% !important;
+                        height: auto !important;
+                    }
+                    /* Responsive Tables */
+                    .cms-content table {
+                        display: block;
+                        width: 100%;
+                        overflow-x: auto;
+                        border-collapse: collapse;
+                    }
+                    .cms-content td, .cms-content th {
+                        border: 1px solid #e5e7eb;
+                        padding: 0.5rem;
+                    }
+                </style>
+                {!! $page->content !!}
             </div>
 
             @if($page->cta_text && $page->cta_url)

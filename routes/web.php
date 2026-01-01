@@ -25,6 +25,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::resource('pages', \App\Http\Controllers\Admin\PageController::class);
 
 
+    Route::post('circular-items/update-dimensions', [\App\Http\Controllers\Admin\CircularItemController::class, 'updateDimensions'])->name('circular-items.update-dimensions');
     Route::resource('circular-items', \App\Http\Controllers\Admin\CircularItemController::class);
 });
 

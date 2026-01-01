@@ -29,6 +29,8 @@ class CircularItemController extends Controller
             'title' => 'required|string|max:255',
             'button_text' => 'required|string|max:255',
             'link' => 'required|string',
+            'color' => 'nullable|string|max:255',
+            'text_color' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer',
         ]);
 
@@ -37,6 +39,8 @@ class CircularItemController extends Controller
             'description' => $request->description,
             'button_text' => $request->button_text,
             'link' => $request->link,
+            'color' => $request->color,
+            'text_color' => $request->text_color,
             'is_active' => $request->has('is_active'),
             'sort_order' => $request->sort_order ?? 0,
         ]);
@@ -56,6 +60,8 @@ class CircularItemController extends Controller
             'title' => 'required|string|max:255',
             'button_text' => 'required|string|max:255',
             'link' => 'required|string',
+            'color' => 'nullable|string|max:255',
+            'text_color' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer',
         ]);
 
@@ -64,6 +70,8 @@ class CircularItemController extends Controller
             'description' => $request->description,
             'button_text' => $request->button_text,
             'link' => $request->link,
+            'color' => $request->color,
+            'text_color' => $request->text_color,
             'is_active' => $request->has('is_active'),
             'sort_order' => $request->sort_order ?? 0,
         ]);
@@ -77,5 +85,34 @@ class CircularItemController extends Controller
         $circularItem->delete();
         return redirect()->route('admin.circular-items.index')
             ->with('success', 'Circular Item deleted successfully.');
+    }
+
+    public function updateDimensions(Request $request)
+    {
+        $request->validate([
+            'card_width' => 'nullable|integer|min:100|max:500',
+            'card_height' => 'nullable|integer|min:80|max:400',
+            'card_border_radius' => 'nullable|integer|min:0|max:50',
+            'card_animation_speed' => 'nullable|numeric|min:0.1|max:5',
+        ]);
+
+        if ($request->has('card_width')) {
+            \App\Models\Setting::set('card_width', $request->input('card_width'));
+        }
+
+        if ($request->has('card_height')) {
+            \App\Models\Setting::set('card_height', $request->input('card_height'));
+        }
+
+        if ($request->has('card_border_radius')) {
+            \App\Models\Setting::set('card_border_radius', $request->input('card_border_radius'));
+        }
+
+        if ($request->has('card_animation_speed')) {
+            \App\Models\Setting::set('card_animation_speed', $request->input('card_animation_speed'));
+        }
+
+        return redirect()->route('admin.circular-items.index')
+            ->with('success', 'Card dimensions updated successfully.');
     }
 }

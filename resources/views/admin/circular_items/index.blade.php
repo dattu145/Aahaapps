@@ -1,12 +1,50 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Circular Items') }}
+            {{ __('Home Page Cards') }}
         </h2>
     </x-slot>
 
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            
+            {{-- Card Dimensions Settings --}}
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Card Dimensions</h3>
+                    <form method="POST" action="{{ route('admin.circular-items.update-dimensions') }}">
+                        @csrf
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="card_width" class="block text-sm font-medium text-gray-700 mb-1">Card Width (px)</label>
+                                <input type="number" name="card_width" id="card_width" value="{{ \App\Models\Setting::get('card_width', 280) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="280">
+                                <p class="text-xs text-gray-400 mt-1">Default: 280px</p>
+                            </div>
+                            <div>
+                                <label for="card_height" class="block text-sm font-medium text-gray-700 mb-1">Card Height (px)</label>
+                                <input type="number" name="card_height" id="card_height" value="{{ \App\Models\Setting::get('card_height', 200) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="200">
+                                <p class="text-xs text-gray-400 mt-1">Default: 200px</p>
+                            </div>
+                            <div>
+                                <label for="card_border_radius" class="block text-sm font-medium text-gray-700 mb-1">Border Radius (px)</label>
+                                <input type="number" name="card_border_radius" id="card_border_radius" value="{{ \App\Models\Setting::get('card_border_radius', 16) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="16">
+                                <p class="text-xs text-gray-400 mt-1">Default: 16px</p>
+                            </div>
+                            <div>
+                                <label for="card_animation_speed" class="block text-sm font-medium text-gray-700 mb-1">Animation Speed</label>
+                                <input type="number" step="0.1" name="card_animation_speed" id="card_animation_speed" value="{{ \App\Models\Setting::get('card_animation_speed', 1) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="1.0">
+                                <p class="text-xs text-gray-400 mt-1">Default: 1.0 (higher = faster)</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-3">These settings apply to all cards on the homepage</p>
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            Update Dimensions
+                        </button>
+                    </form>
+                </div>
+            </div>
+
             <div class="flex justify-end mb-4">
                 <a href="{{ route('admin.circular-items.create') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                     Add New Item

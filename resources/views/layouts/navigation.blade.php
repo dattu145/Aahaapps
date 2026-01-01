@@ -23,7 +23,7 @@
                     </x-nav-link>
 
                     <x-nav-link :href="route('admin.circular-items.index')" :active="request()->routeIs('admin.circular-items.*')">
-                        {{ __('Circular Items') }}
+                        {{ __('Home Page Cards') }}
                     </x-nav-link>
                     <x-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
                         {{ __('Settings') }}
@@ -91,7 +91,7 @@
             </x-responsive-nav-link>
 
             <x-responsive-nav-link :href="route('admin.circular-items.index')" :active="request()->routeIs('admin.circular-items.*')">
-                {{ __('Circular Items') }}
+                {{ __('Home Page Cards') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
                 {{ __('Settings') }}

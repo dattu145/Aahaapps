@@ -76,101 +76,150 @@
             transform: translateX(4px);
         }
         
-        /* CIRCULAR CAROUSEL STYLES - REFINED FOR GAPLESS LOOP AND BOTTOM ORIGIN */
-        .circular-wrapper {
-            position: absolute;
-            bottom: 0; /* Origin anchored at bottom edge */
-            left: 50%;
-            transform: translate(-50%, 50%); /* Move down by 50% so center aligns with bottom edge */
-            width: 90vh;
-            height: 90vh;
-            border-radius: 50%;
-            z-index: 30;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; 
-            pointer-events: none;
-        }
-        
-        @media (max-width: 768px) {
-             .circular-wrapper {
-                width: 50vh; /* Reduced for mobile for better fit */
-                height: 50vh;
-                transform: translate(-50%, 50%); 
-             }
-        }
-
-        .circular-container {
-            position: relative;
+        /* HORIZONTAL CAROUSEL STYLES - INFINITE LOOP AT BOTTOM */
+        /* HORIZONTAL CAROUSEL STYLES - INFINITE LOOP AT BOTTOM */
+        .horizontal-carousel-wrapper {
+            position: fixed;
+            bottom: 0; /* Remove margin as requested */
+            left: 0;
             width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            transform-origin: center center;
-            will-change: transform;
+            height: calc({{ \App\Models\Setting::get('card_height', 200) }}px + 60px);
+            z-index: 30;
+            overflow: hidden;
+            background: transparent; /* Remove background */
             pointer-events: auto;
-            cursor: grab;
-        }
-
-        .circular-item {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 270px; 
-            height: 340px; 
-            margin-left: -100px; 
-            margin-top: -125px; 
-            transform-origin: center calc(45vh + 270px); 
         }
         
-        @media (max-width: 768px) {
-            .circular-item {
-                 width: 140px; /* Slightly smaller cards on mobile */
-                 height: 180px;
-                 margin-left: -70px;
-                 margin-top: -90px;
-                 transform-origin: center calc(25vh + 90px); 
+        /* Mobile Only (< 768px) where bottom nav exists */
+        @media (max-width: 767px) {
+            .horizontal-carousel-wrapper {
+                bottom: 80px; /* Space for mobile bottom nav (64px + 16px buffer) */
+                height: 200px;
             }
         }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+            background: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                /* No extra padding needed on body */
+            }
+        }
+        .horizontal-carousel-track {
+            display: flex;
+            gap: 20px;
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            will-change: transform;
+            cursor: grab;
+            padding: 0 20px;
+        }
+        
+        .horizontal-carousel-track:active {
+            cursor: grabbing;
+        }
 
-        .circular-item .card-inner {
-            width: 100%;
-            height: 100%;
-            border: 1px solid rgba(0, 0, 0, 0.1); /* Darker border for light card */
-            border-radius: 20px;
+        .carousel-card {
+            flex-shrink: 0;
+            width: {{ \App\Models\Setting::get('card_width', 280) }}px;
+            height: {{ \App\Models\Setting::get('card_height', 200) }}px;
+            background: rgba(255, 255, 255, 0.95); /* Default white background */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: {{ \App\Models\Setting::get('card_border_radius', 16) }}px;
             overflow: hidden;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            color: #1a1a1a; /* Dark text for visibility on light exclusion bg */
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 24px;
+            padding: 20px;
             position: relative;
             z-index: 1;
             isolation: isolate;
         }
-        .circular-item .card-inner::before {
+        
+        @media (max-width: 768px) {
+            .carousel-card {
+                width: clamp(180px, 45vw, 220px); /* Responsive width */
+                height: clamp(120px, 30vw, 160px); /* Responsive height */
+                padding: 12px;
+                font-size: 0.85rem;
+            }
+            
+            .carousel-card h3 {
+                font-size: 0.9rem !important;
+                margin-bottom: 0.25rem !important;
+            }
+            
+            .carousel-card p {
+                font-size: 0.7rem !important;
+            }
+            
+            .carousel-card .explore-btn {
+                font-size: 0.6rem !important;
+                padding: 0.25rem 0.75rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .carousel-card {
+                width: clamp(160px, 50vw, 200px);
+                height: clamp(110px, 35vw, 140px);
+                padding: 10px;
+            }
+        }
+        
+        .carousel-card::before {
             content: '';
             position: absolute;
             inset: 0;
             z-index: -1;
-            background: rgba(255, 255, 255, 0.9); /* High opacity white drives the math */
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            mix-blend-mode: exclusion; /* The key effect */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             transition: all 0.3s ease;
         }
 
-        .circular-item:hover .card-inner {
-            transform: scale(1.05) translateY(-10px);
-            border-color: rgba(0, 0, 0, 0.3);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        .carousel-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+        }
+        
+        /* Explore button hover styles */
+        .carousel-card .explore-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-card .explore-btn:hover {
+            background-color: #000 !important;
+            color: #fff !important;
+            border-color: #000 !important;
         }
 
-        .circular-item:hover .card-inner::before {
-            background: rgba(255, 255, 255, 1.0); /* Full intensity on hover */
+        #hero {
+            position: relative;
+            overflow: hidden;
+            height: 100vh;
+            /* Reserve space for bottom carousel: card_height + 60px (wrapper) + 20px (offset) + buffer */
+            /* Reduced buffer since we moved carousel down (was 240px offset, now lower) */
+            padding-bottom: calc({{ \App\Models\Setting::get('card_height', 200) }}px + 180px);
+            box-sizing: border-box; 
+        }
+        
+        @media (max-width: 767px) {
+            #hero {
+                /* Mobile: needs more space due to higher carousel position */
+                padding-bottom: 300px;
+            }
         }
 
         /* Scroll Lock Utility */
@@ -349,7 +398,8 @@
     </div>
 
     <!-- MOBILE/TABLET TOP HEADER -->
-    <header class="lg:hidden fixed top-0 w-full h-16 bg-white/90 backdrop-blur-md border-b border-gray-200 z-80 flex items-center justify-between px-4 sm:px-6">
+    <!-- MOBILE/TABLET TOP HEADER -->
+    <header class="lg:hidden fixed top-0 w-full h-16 bg-white/90 backdrop-blur-md border-b border-gray-200 z-50 flex items-center justify-between px-4 sm:px-6">
         <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2">
            @if(isset($globalSettings['logo']) && $globalSettings['logo'])
@@ -477,70 +527,46 @@
 
         <!-- Hero Content -->
         <div class="relative z-20 h-full flex flex-col px-4 sm:px-6 lg:px-8 pointer-events-none">
+            <!-- Spacer for fixed menu - reduced height to allow content to sit higher -->
+            <div class="h-24 md:h-20 flex-shrink-0"></div>
             
-            <!-- Spacer for fixed menu (approx 100px - 150px safe area) -->
-            <div class="h-32 md:h-40 flex-shrink-0"></div>
-
             <!-- Content centered in remaining space -->
-            <div class="flex-1 flex flex-col items-center justify-center pb-48">
-                <h1 class="text-6xl md:text-8xl lg:text-9xl font-extrabold text-white tracking-tighter mb-6 opacity-0 animate-fade-in-up pointer-events-auto shadow-sm">
-                    Aaha Apps
+            <div class="flex-1 flex flex-col items-center justify-center pb-0 md:pb-12">
+                
+                <h1 class="text-6xl md:text-7xl lg:text-8xl font-black text-center mb-6 tracking-tight drop-shadow-2xl">
+                    <span class="text-white font-bold">Aaha</span> 
+                    <span class="text-white font-bold">Apps</span>
                 </h1>
-
-                <p class="text-xl md:text-2xl text-white max-w-4xl mx-auto font-light leading-relaxed mb-10 opacity-0 animate-fade-in-up delay-300 pointer-events-auto drop-shadow-md">
-                    Igniting <span class="font-semibold text-white">digital excellence</span> with premium Video & Web solutions.
+                
+                <p class="text-lg md:text-2xl text-center text-gray-200 mb-10 max-w-2xl font-medium leading-relaxed drop-shadow-md">
+                    Igniting <span class="font-bold text-white border-b-2 border-indigo-500">digital excellence</span> with premium Video & Web solutions.
                 </p>
             </div>
         </div>
-
-        <!-- Circular Draggable Services Loop -->
-        <div class="circular-wrapper pointer-events-auto" id="circularWrapper">
-            <div class="circular-container" id="circularContainer">
+        <!-- Horizontal Draggable Carousel at Bottom -->
+        <div class="horizontal-carousel-wrapper" id="horizontalCarouselWrapper">
+            <div class="horizontal-carousel-track" id="horizontalCarouselTrack">
                 @php
                     $loopItems = collect();
-                    // If no circular items, we might want to show services or nothing? 
-                    // Assuming we show circular items if they exist.
                     $sourceItems = (isset($circularItems) && $circularItems->count() > 0) ? $circularItems : collect();
                     
                     if ($sourceItems->count() > 0) {
-                        $loopItems = $sourceItems;
-                        $iterations = 0;
-                        // Ensure enough items to fill the circle
-                        while($loopItems->count() < 15 && $iterations < 20) {
-                            $loopItems = $loopItems->merge($sourceItems);
-                            $iterations++;
-                        }
-                    } else {
-                        // Fallback to services if no circular items (Preserving original logic style or empty)
-                        // For this task, let's assume empty if no items, or maybe fallback? 
-                        // User specifically asked for this feature, so let's stick to circularItems.
-                        // But to avoid empty space if user hasn't added items yet, maybe keep services as fallback?
-                        // Let's stick to strict circularItems as requested.
+                        // Duplicate items for infinite loop
+                        $loopItems = $sourceItems->concat($sourceItems)->concat($sourceItems);
                     }
                 @endphp
                 @foreach($loopItems as $index => $item)
-                    <div class="circular-item">
-                        <a href="{{ $item->link ?? '#' }}" target="_blank" class="card-inner group block w-full h-full text-decoration-none">
-                            <!-- Title: Inherits dark color from parent -->
-                            <h3 class="text-xl font-bold mb-2 group-hover:scale-110 transition-transform">{{ $item->title }}</h3>
+                    <div class="carousel-card" @if($item->color) style="background: {{ $item->color }} !important;" @endif>
+                        <a href="{{ $item->link ?? '#' }}" @if(Str::startsWith($item->link ?? '', 'http')) target="_blank" @endif class="group flex flex-col justify-around items-center w-full h-full text-decoration-none card-link" data-href="{{ $item->link ?? '#' }}">
+                            <h3 class="text-base md:text-lg font-bold mb-1 transition-colors" @if($item->text_color) style="color: {{ $item->text_color}} !important;" @endif>{{ $item->title }}</h3>
                             
                             @if($item->description)
-                            <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ $item->description }}</p>
+                            <p class="text-xs mb-2 line-clamp-2" @if($item->text_color) style="color: {{ $item->text_color }} !important;" @endif>{{ Str::limit($item->description, 60) }}</p>
                             @endif
 
-                            <!-- Divider: Dark for contrast on light bg -->
-                            <div class="w-10 h-1 bg-black/20 rounded mt-2 mb-4 mx-auto"></div>
-                            
-                            <!-- Button: Dark borders and text -->
-                            <span class="explore-btn relative z-10 inline-block cursor-pointer text-xs uppercase tracking-widest border border-black/20 px-3 py-1 rounded-full bg-transparent text-black transition-colors duration-[400ms]">
+                            <span class="explore-btn relative z-10 inline-block cursor-pointer text-[10px] md:text-xs uppercase tracking-widest border px-3 py-1.5 rounded-full bg-transparent transition-colors duration-300" @if($item->text_color) style="color: {{ $item->text_color }} !important; border-color: {{ $item->text_color }} !important;" @endif>
                                 {{ $item->button_text }}
                             </span>
-                            <style>
-                                .explore-btn:hover {
-                                    background-color: black !important;
-                                    color: white !important;
-                                }
-                            </style>
                         </a>
                     </div>
                 @endforeach
@@ -563,109 +589,144 @@
             }
             window.scrollTo(0, 0);
 
-            const container = document.getElementById('circularContainer');
-            const items = document.querySelectorAll('.circular-item');
-            const totalItems = items.length;
-            if (totalItems === 0) return;
-
-            // Geometry Config
-            // Dynamic Angle Step for Perfect 360 Loop
-            const angleStep = 360 / totalItems; 
+            // Horizontal Carousel Logic
+            const track = document.getElementById('horizontalCarouselTrack');
+            const wrapper = document.getElementById('horizontalCarouselWrapper');
             
-            // Initial distribution
-            items.forEach((item, index) => {
-                const angle = index * angleStep;
-                
-                // Set radius dynamically if needed, but CSS handles layout.
-                // We just rotate.
-                item.style.transform = `rotate(${angle}deg)`;
-            });
-
-            // Physics Variables
-            let currentRotation = 0;
-            let targetRotation = 0;
+            if (!track || !wrapper) return;
+            
+            const cards = track.querySelectorAll('.carousel-card');
+            if (cards.length === 0) return;
+            
+            // Calculate total width
+            const cardWidth = cards[0].offsetWidth;
+            const gap = 20;
+            const singleSetWidth = (cardWidth + gap) * (cards.length / 3); // Divide by 3 because we tripled items
+            
+            
+            // Animation variables
+            let currentX = 0;
+            let targetX = 0;
             let isDragging = false;
+            let isDragged = false; // Track if actually dragged
+            let isPaused = false;
             let startX = 0;
-            let lastX = 0;
             let velocity = 0;
             const friction = 0.95;
-            let autoRotateSpeed = 0.25; // Slower auto rotate for elegance
-
+            const autoScrollSpeed = {{ \App\Models\Setting::get('card_animation_speed', 1) }}; // From CMS settings
+            
             function animate() {
-                if (!isDragging) {
-                    targetRotation += autoRotateSpeed;
+                if (!isDragging && !isPaused) {
+                    // Auto-scroll from left to right
+                    targetX -= autoScrollSpeed;
+                    
+                    // Add velocity if exists
                     if (Math.abs(velocity) > 0.01) {
-                        targetRotation += velocity;
+                        targetX += velocity;
                         velocity *= friction;
                     }
+                    
+                    // Infinite loop: reset when scrolled one set
+                    if (Math.abs(targetX) >= singleSetWidth) {
+                        targetX = targetX % singleSetWidth;
+                        currentX = targetX;
+                    }
                 }
-
-                currentRotation += (targetRotation - currentRotation) * 0.1;
                 
-                container.style.transform = `rotate(${currentRotation}deg)`;
+                // Smooth interpolation
+                currentX += (targetX - currentX) * 0.1;
+                track.style.transform = `translateX(${currentX}px)`;
+                
                 requestAnimationFrame(animate);
             }
             animate();
-
-            // Interaction
-            const wrapper = document.getElementById('circularWrapper');
-
+            
+            // Drag functionality
+            let lastX = 0;
+            const dragThreshold = 5; // Minimum pixels to consider it a drag
+            
             wrapper.addEventListener('mousedown', (e) => {
                 isDragging = true;
+                isDragged = false;
                 startX = e.clientX;
                 lastX = e.clientX;
                 velocity = 0;
-                container.style.cursor = 'grabbing';
+                track.style.cursor = 'grabbing';
             });
-
+            
             window.addEventListener('mouseup', () => {
-                isDragging = false;
-                container.style.cursor = 'grab';
+                if (isDragging) {
+                    isDragging = false;
+                    track.style.cursor = 'grab';
+                }
             });
-
+            
             window.addEventListener('mousemove', (e) => {
                 if (!isDragging) return;
+                
                 const deltaX = e.clientX - lastX;
+                const totalDrag = Math.abs(e.clientX - startX);
+                
+                // If dragged more than 5 pixels, mark as dragged
+                if (totalDrag > 5) {
+                    isDragged = true;
+                }
+                
                 lastX = e.clientX;
-                
-                const rotateDelta = deltaX * 0.1;
-                targetRotation += rotateDelta;
-                velocity = rotateDelta;
-                
-                // Update auto speed to match throw direction
-                autoRotateSpeed = (velocity > 0 ? 0.08 : -0.08);
+                targetX += deltaX;
+                velocity = deltaX * 0.5;
             });
-
-            // Pause on Hover
-            let isHovered = false;
-            items.forEach(item => {
-                item.addEventListener('mouseenter', () => {
-                    isHovered = true;
-                    autoRotateSpeed = 0; // Stop rotation immediately
-                    velocity = 0;
-                });
-                item.addEventListener('mouseleave', () => {
-                    isHovered = false;
-                    // Resume rotation based on last direction or default positive
-                    autoRotateSpeed = 0.08; 
-                });
-            });
-
-            // Touch
+            
+            // Touch support
             wrapper.addEventListener('touchstart', (e) => {
                 isDragging = true;
+                isDragged = false;
                 startX = e.touches[0].clientX;
                 lastX = e.touches[0].clientX;
                 velocity = 0;
             });
-            window.addEventListener('touchend', () => isDragging = false);
+            
+            window.addEventListener('touchend', () => {
+                if (isDragging) {
+                    isDragging = false;
+                }
+            });
+            
             window.addEventListener('touchmove', (e) => {
                 if (!isDragging) return;
-                const deltaX = e.touches[0].clientX - lastX;
-                lastX = e.touches[0].clientX;
-                const rotateDelta = deltaX * 0.1;
-                targetRotation += rotateDelta;
-                velocity = rotateDelta;
+                
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - lastX;
+                const totalDrag = Math.abs(touch.clientX - startX);
+                
+                if (totalDrag > 5) {
+                    isDragged = true;
+                }
+                
+                lastX = touch.clientX;
+                targetX += deltaX;
+                velocity = deltaX * 0.5;
+            });
+            
+            // Prevent link clicks when dragging
+            document.querySelectorAll('.card-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (isDragged) {
+                        e.preventDefault();
+                        isDragged = false; // Reset
+                    }
+                });
+            });
+            
+            // Pause animation on card hover
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    isPaused = true;
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    isPaused = false;
+                });
             });
         });
 

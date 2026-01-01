@@ -22,9 +22,8 @@ class PublicController extends Controller
             return WelcomeImage::active()->ordered()->get();
         });
         
-        $circularItems = cache()->remember('homepage.circular_items', 3600, function() {
-            return CircularItem::active()->ordered()->get();
-        });
+        
+        $circularItems = CircularItem::active()->ordered()->get();
         
         $services = cache()->remember('homepage.services', 3600, function() {
             return Service::active()->ordered()->get();

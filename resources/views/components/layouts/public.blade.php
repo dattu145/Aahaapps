@@ -198,7 +198,8 @@
         }
     </style>
 </head>
-<body class="antialiased bg-gray-50 text-gray-900 font-sans selection:bg-indigo-100 selection:text-indigo-700 overflow-hidden" 
+</head>
+<body class="antialiased bg-gray-50 text-gray-900 font-sans selection:bg-indigo-100 selection:text-indigo-700" 
       id="main-body"
       x-data="{ 
           menuOpen: false, 

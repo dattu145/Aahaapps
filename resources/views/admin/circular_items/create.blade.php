@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Add New Circular Item') }}
+            {{ __('Add New Home Page Card') }}
         </h2>
     </x-slot>
 
@@ -29,7 +29,25 @@
 
                         <div class="mb-4">
                             <label for="link" class="block text-gray-700 text-sm font-bold mb-2">Link</label>
-                            <input type="text" name="link" id="link" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            <input type="text" name="link" id="link" placeholder="e.g., /erp or https://example.com" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="color" class="block text-gray-700 text-sm font-bold mb-2">Card Color (Optional)</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" name="color" id="color" class="h-10 w-20 rounded border border-gray-300 cursor-pointer">
+                                <input type="text" id="color_hex" value="#ffffff" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="#FFFFFF">
+                            </div>
+                            <p class="text-gray-500 text-xs mt-1">Choose a color for this card or leave default</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="text_color" class="block text-gray-700 text-sm font-bold mb-2">Text Color (Optional)</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" name="text_color" id="text_color" value="#1a1a1a" class="h-10 w-20 rounded border border-gray-300 cursor-pointer">
+                                <input type="text" id="text_color_hex" value="#1a1a1a" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="#1A1A1A">
+                            </div>
+                            <p class="text-gray-500 text-xs mt-1">Choose text color for title, description, button</p>
                         </div>
 
                         <div class="mb-4">
@@ -43,6 +61,35 @@
                                 <span class="ml-2 text-gray-700">Active</span>
                             </label>
                         </div>
+
+                        <script>
+                            const colorPicker = document.getElementById('color');
+                            const colorHex = document.getElementById('color_hex');
+                            
+                            colorPicker.addEventListener('input', (e) => {
+                                colorHex.value = e.target.value;
+                            });
+                            
+                            colorHex.addEventListener('input', (e) => {
+                                if (e.target.value.match(/^#[0-9A-F]{6}$/i)) {
+                                    colorPicker.value = e.target.value;
+                                }
+                            });
+                            
+                            // Text color picker sync
+                            const textColorPicker = document.getElementById('text_color');
+                            const textColorHex = document.getElementById('text_color_hex');
+                            
+                            textColorPicker.addEventListener('input', (e) => {
+                                textColorHex.value = e.target.value;
+                            });
+                            
+                            textColorHex.addEventListener('input', (e) => {
+                                if (e.target.value.match(/^#[0-9A-F]{6}$/i)) {
+                                    textColorPicker.value = e.target.value;
+                                }
+                            });
+                        </script>
 
                         <div class="flex items-center gap-4">
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
