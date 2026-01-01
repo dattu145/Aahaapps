@@ -179,84 +179,7 @@
             height: 100vh;
         }
 
-        /* VERTICAL MARQUEE STYLES - FIXED */
-        .scroll-wrapper {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 220px;
-            height: 100vh; /* Fixed height to viewport */
-            overflow: hidden;
-            z-index: 50; /* Increased to ensure it's above hero text for hover */
-            opacity: 1;
-            pointer-events: none; /* Let clicks pass through wrapper... */
-        }
 
-        /* The track that contains all images - FIXED */
-        .scroll-track {
-            pointer-events: auto; /* ...but catch them on the images/track */
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            will-change: transform;
-            /* Animation duration from CMS - default to 40s */
-            animation: scrollUp var(--marquee-duration, 40s) linear infinite;
-        }
-
-        .scroll-track:hover {
-            animation-play-state: paused;
-        }
-
-        /* Individual image container */
-        .scroll-image-container {
-            width: 100%;
-            flex-shrink: 0; /* Prevent images from shrinking */
-            transition: all 0.5s ease;
-            opacity: 1;
-            filter: none;
-            margin-bottom: 20px; /* Space between images */
-        }
-
-        .scroll-image-container:last-child {
-            margin-bottom: 0; /* No margin on last item */
-        }
-
-        .scroll-image-container img {
-            width: 100%;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: block;
-            object-fit: cover;
-        }
-
-        /* Hover effect on individual item */
-        .scroll-image-container:hover {
-            opacity: 1;
-            filter: grayscale(0%);
-            transform: scale(1.05);
-            z-index: 10;
-        }
-
-        /* Keyframe animation - FIXED for seamless loop */
-        @keyframes scrollUp {
-            0% {
-                transform: translateY(0);
-            }
-            100% {
-                transform: translateY(-50%); /* Move up by exactly half of duplicated content */
-            }
-        }
-
-        /* Mobile Adjustment */
-        @media (max-width: 768px) {
-            .scroll-wrapper {
-                width: 140px;
-            }
-            .scroll-image-container {
-                margin-bottom: 15px;
-            }
-        }
     </style>
 </head>
 <body class="antialiased bg-gray-50 text-gray-900 font-sans selection:bg-indigo-100 selection:text-indigo-700 overflow-hidden" 
@@ -275,8 +198,7 @@
                   this.menuState = 'collapsed';
               }
           }
-      }"
-      style="--marquee-duration: {{ \App\Models\Setting::get('marquee_speed', 40) }}s;">
+      }">
 
     <!-- DESKTOP ANIMATED MENU (lg and above only) -->
     <div class="hidden lg:block">
@@ -536,70 +458,16 @@
 
     <!-- VIDEO HERO SECTION -->
     <div class="relative w-full h-screen overflow-hidden">
-        <!-- VERTICAL MARQUEE (Inside Hero) - FIXED -->
-        <div class="scroll-wrapper hidden lg:block">
-            <div class="scroll-track">
-                @php
-                    // Get active images from CMS
-                    $activeImages = isset($welcomeImages) && $welcomeImages->count() > 0 
-                        ? $welcomeImages 
-                        : collect([
-                            (object)['image_path' => null, 'fallback' => 'https://picsum.photos/300/400?random=1'],
-                            (object)['image_path' => null, 'fallback' => 'https://picsum.photos/300/500?random=2'],
-                        ]);
 
-                    // If we have only 1 image, duplicate it to create at least 2 for proper animation
-                    if ($activeImages->count() === 1) {
-                        $activeImages = $activeImages->merge($activeImages);
-                    }
-                @endphp
 
-                {{-- First Set --}}
-                @foreach($activeImages as $img)
-                    <div class="scroll-image-container">
-                        @if(isset($img->image_path) && $img->image_path)
-                            @if(isset($img->target_url) && $img->target_url)
-                                <a href="{{ $img->target_url }}" target="_blank" class="block w-full h-full"> 
-                                    <img src="{{ asset('storage/' . $img->image_path) }}" 
-                                         alt="Portfolio"
-                                         style="opacity: {{ ($img->opacity ?? 100) / 100 }};">
-                                </a>
-                            @else
-                                <img src="{{ asset('storage/' . $img->image_path) }}" 
-                                     alt="Portfolio"
-                                     style="opacity: {{ ($img->opacity ?? 100) / 100 }};">
-                            @endif
-                        @else
-                            <img src="{{ $img->fallback }}" alt="Portfolio Placeholder">
-                        @endif
-                    </div>
-                @endforeach
-
-                {{-- Second Set (Duplicate for seamless loop) --}}
-                @foreach($activeImages as $img)
-                    <div class="scroll-image-container">
-                        @if(isset($img->image_path) && $img->image_path)
-                            @if(isset($img->target_url) && $img->target_url)
-                                <a href="{{ $img->target_url }}" target="_blank" class="block w-full h-full">
-                                    <img src="{{ asset('storage/' . $img->image_path) }}" 
-                                         alt="Portfolio"
-                                         style="opacity: {{ ($img->opacity ?? 100) / 100 }};">
-                                </a>
-                            @else
-                                <img src="{{ asset('storage/' . $img->image_path) }}" 
-                                     alt="Portfolio"
-                                     style="opacity: {{ ($img->opacity ?? 100) / 100 }};">
-                            @endif
-                        @else
-                            <img src="{{ $img->fallback }}" alt="Portfolio Placeholder">
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-        <!-- Background Video -->
-        <video class="absolute top-0 left-0 w-full h-full object-cover z-0" autoplay muted loop playsinline>
+        <!-- Background Video - Optimized for Lazy Loading -->
+        <video class="absolute top-0 left-0 w-full h-full object-cover z-0" 
+               autoplay 
+               muted 
+               loop 
+               playsinline
+               preload="metadata"
+               poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%23111' width='1920' height='1080'/%3E%3C/svg%3E">
             <source src="{{ asset('demovideo.mp4') }}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
@@ -680,116 +548,12 @@
         </div>
     </div>
 
-    <!-- FULL WIDTH DYNAMIC SERVICES GRID -->
-    <div id="services" class="relative w-full bg-gray-950 py-24">
-        <div class="w-full px-4 md:px-8">
-            
-            <!-- Section Header -->
-            <div class="text-center mb-20"
-                 x-data="{ show: false }"
-                 x-intersect.once="show = true">
-                <h2 class="text-sm text-indigo-400 font-bold tracking-[0.3em] uppercase mb-4 opacity-0 transition-all duration-700 transform"
-                    :class="show ? 'opacity-100 translate-y-0' : 'translate-y-4'">
-                    What We Do
-                </h2>
-                <p class="text-5xl md:text-7xl font-bold text-white opacity-0 transition-all duration-700 delay-100 transform"
-                   :class="show ? 'opacity-100 translate-y-0' : 'translate-y-4'">
-                    Our Services
-                </p>
-            </div>
 
-            <!-- Dynamic Grid -->
-            <div class="grid gap-8 grid-cols-1 min-[451px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                
-                @foreach($services as $index => $service)
-                <div class="group relative h-[280px] sm:h-[350px] rounded-3xl overflow-hidden cursor-pointer"
-                     x-data="{ show: false }"
-                     x-intersect.half="show = true"
-                     :class="show ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
-                     style="transition: all 0.6s ease-out; transition-delay: {{ $index * 100 }}ms;">
-                    
-                    <!-- Image Background -->
-                    @if($service->image)
-                        <img src="{{ Str::startsWith($service->image, 'http') ? $service->image : Storage::url($service->image) }}" 
-                             alt="{{ $service->name }}" 
-                             class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out">
-                    @else
-                        <!-- Fallback Image if none provided -->
-                        <img src="https://source.unsplash.com/random/800x1000/?{{ Str::slug($service->name) }}" 
-                             alt="{{ $service->name }}" 
-                             class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out">
-                    @endif
-                    
-                    <!-- Gradient Overlay -->
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
-                    
-                    <!-- Content -->
-                    <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                        <span class="inline-block px-4 py-1.5 glass-panel rounded-full text-xs font-semibold text-white mb-4">
-                            Service
-                        </span>
-                        <h3 class="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight group-hover:text-indigo-300 transition-colors">
-                            {{ $service->name }}
-                        </h3>
-                        <p class="text-gray-300 text-sm line-clamp-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                            {{ $service->description }}
-                        </p>
-                        
-                        <div class="mt-6 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">
-                            <a href="{{ $service->login_url ?: 'https://profile.aahaapps.com' }}" class="text-white font-semibold hover:text-indigo-400 transition-colors">Login</a>
-                            
-                            @php
-                                $whatsapp = \App\Models\Setting::get('whatsapp_number');
-                                $enquiryUrl = $whatsapp ? "https://wa.me/{$whatsapp}?text=I am interested in " . urlencode($service->name) : "/contact";
-                            @endphp
-
-                            <a href="{{ $enquiryUrl }}" class="px-5 py-2 bg-white text-black text-sm font-bold rounded-full hover:bg-gray-200 transition-colors" {{ $whatsapp ? 'target="_blank"' : '' }}>
-                                Enquiry
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-
-            </div>
-        </div>
-    </div>
 
     @livewireScripts
 
 
-    <!-- UNIFIED Fixed Floating Button -->
-    <style>
-        #fixed-services-btn {
-            position: absolute;
-            z-index: 60; /* Higher than marquee (50), lower than menu (9999) */
-            right: 20px;
-            top: 90px;
-            transition: all 0.3s ease;
-        }
-        @media (min-width: 768px) {
-            #fixed-services-btn {
-                right: 40px;
-                top: 120px;
-            }
-        }
-        /* Ensure it's always visible */
-        #fixed-services-btn { display: block !important; opacity: 1 !important; visibility: visible !important; }
-    </style>
-    
-    <div id="fixed-services-btn">
-        <button type="button" 
-                onclick="unlockScroll()"
-                class="group flex items-center gap-3 bg-black/30 hover:bg-black/50 backdrop-blur-md border border-white/20 pl-4 pr-1.5 py-1.5 md:pl-5 md:pr-2 md:py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-indigo-500/20">
-            <!-- Text: smaller on mobile, larger on desktop -->
-            <span class="text-white font-bold text-[10px] md:text-xs uppercase tracking-widest group-hover:text-indigo-200 transition-colors">View All Services</span>
-            
-            <!-- Icon Circle: smaller on mobile, larger on desktop -->
-            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg group-hover:rotate-90 transition-transform duration-500">
-                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </div>
-        </button>
-    </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -905,13 +669,7 @@
             });
         });
 
-        function unlockScroll() {
-            const body = document.getElementById('main-body');
-            const servicesSection = document.getElementById('services');
-            body.classList.remove('overflow-hidden');
-            body.style.overflow = 'auto';
-            servicesSection.scrollIntoView({ behavior: 'smooth' });
-        }
+
     </script>
 </body>
 </html>

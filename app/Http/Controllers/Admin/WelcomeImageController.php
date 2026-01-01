@@ -16,20 +16,13 @@ class WelcomeImageController extends Controller
     public function index()
     {
         $images = WelcomeImage::ordered()->get();
-        $marquee_speed = Setting::get('marquee_speed', 40);
-        return view('admin.welcome_images.index', compact('images', 'marquee_speed'));
+        $marquee_speed = Setting::where('key', 'marquee_speed')->value('value') ?? 40;
+        $iframe_width = Setting::where('key', 'iframe_width')->value('value') ?? '220px';
+        $iframe_height = Setting::where('key', 'iframe_height')->value('value') ?? '100vh';
+        
+        return view('admin.welcome_images.index', compact('images', 'marquee_speed', 'iframe_width', 'iframe_height'));
     }
 
-    public function updateSettings(Request $request)
-    {
-        $request->validate([
-            'marquee_speed' => 'required|integer|min:5|max:200',
-        ]);
-
-        Setting::set('marquee_speed', $request->input('marquee_speed'));
-
-        return back()->with('success', 'Marquee speed updated successfully.');
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -45,24 +38,20 @@ class WelcomeImageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'iframe_url' => 'required|url',
             'sort_order' => 'nullable|integer',
-            'target_url' => 'nullable|url',
-            'opacity' => 'nullable|integer|min:0|max:100',
         ]);
 
-        $imagePath = $request->file('image')->store('welcome_images', 'public');
-
         WelcomeImage::create([
-            'image_path' => $imagePath,
+            'type' => 'iframe',
+            'image_path' => null,  // Explicitly set to NULL for iframes
+            'iframe_url' => $request->iframe_url,
             'sort_order' => $request->sort_order ?? 0,
             'is_active' => $request->has('is_active'),
-            'target_url' => $request->target_url,
-            'opacity' => $request->opacity ?? 100,
         ]);
 
         return redirect()->route('admin.welcome-images.index')
-            ->with('success', 'Image uploaded successfully.');
+            ->with('success', 'Website added successfully.');
     }
 
     /**
@@ -79,30 +68,19 @@ class WelcomeImageController extends Controller
     public function update(Request $request, WelcomeImage $welcomeImage)
     {
         $request->validate([
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'iframe_url' => 'required|url',
             'sort_order' => 'nullable|integer',
-            'target_url' => 'nullable|url',
-            'opacity' => 'nullable|integer|min:0|max:100',
         ]);
 
-        $data = [
+        $welcomeImage->update([
+            'type' => 'iframe',
+            'image_path' => null,  // Explicitly set to NULL for iframes
+            'iframe_url' => $request->iframe_url,
             'sort_order' => $request->sort_order ?? 0,
             'is_active' => $request->has('is_active'),
-            'target_url' => $request->target_url,
-            'opacity' => $request->opacity ?? 100,
-        ];
+        ]);
 
-        if ($request->hasFile('image')) {
-            // Delete old image
-            if (Storage::disk('public')->exists($welcomeImage->image_path)) {
-                Storage::disk('public')->delete($welcomeImage->image_path);
-            }
-            $data['image_path'] = $request->file('image')->store('welcome_images', 'public');
-        }
-
-        $welcomeImage->update($data);
-
-        return redirect()->route('admin.welcome-images.index')->with('success', 'Image updated successfully.');
+        return redirect()->route('admin.welcome-images.index')->with('success', 'Website updated successfully.');
     }
 
     /**
@@ -110,12 +88,46 @@ class WelcomeImageController extends Controller
      */
     public function destroy(WelcomeImage $welcomeImage)
     {
-        if ($welcomeImage->image_path && Storage::disk('public')->exists($welcomeImage->image_path)) {
-            Storage::disk('public')->delete($welcomeImage->image_path);
-        }
-        
         $welcomeImage->delete();
 
-        return redirect()->route('admin.welcome-images.index')->with('success', 'Image deleted successfully.');
+        return redirect()->route('admin.welcome-images.index')->with('success', 'Website deleted successfully.');
+    }
+
+    /**
+     * Update global settings for iframe display
+     */
+    public function updateSettings(Request $request)
+    {
+        $request->validate([
+            'marquee_speed' => 'nullable|integer|min:5|max:200',
+            'iframe_width' => 'nullable|string|max:20',
+            'iframe_height' => 'nullable|string|max:20',
+        ]);
+
+        // Update or create marquee speed
+        if ($request->has('marquee_speed')) {
+            Setting::updateOrCreate(
+                ['key' => 'marquee_speed'],
+                ['value' => $request->marquee_speed]
+            );
+        }
+
+        // Update or create iframe width
+        if ($request->has('iframe_width')) {
+            Setting::updateOrCreate(
+                ['key' => 'iframe_width'],
+                ['value' => $request->iframe_width]
+            );
+        }
+
+        // Update or create iframe height
+        if ($request->has('iframe_height')) {
+            Setting::updateOrCreate(
+                ['key' => 'iframe_height'],
+                ['value' => $request->iframe_height]
+            );
+        }
+
+        return redirect()->route('admin.welcome-images.index')->with('success', 'Settings updated successfully.');
     }
 }

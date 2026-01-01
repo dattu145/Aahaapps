@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WelcomeImage extends Model
 {
-    protected $fillable = ['image_path', 'sort_order', 'is_active', 'target_url', 'opacity'];
+    protected $fillable = ['image_path', 'sort_order', 'is_active', 'target_url', 'opacity', 'type', 'iframe_url'];
 
     public function scopeActive($query)
     {
