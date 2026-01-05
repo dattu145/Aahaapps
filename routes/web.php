@@ -9,9 +9,7 @@ Route::get('/', [PublicController::class, 'index'])->name('home');
 Route::get('/{slug}', [PublicController::class, 'show'])->where('slug', '^(?!admin|login|register|logout).*$')->name('page.show');
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
