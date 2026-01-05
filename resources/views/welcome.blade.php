@@ -871,11 +871,17 @@
                         <div class="mobile-card">
                             <!-- Top: Screenshots (Horizontal Scroll) -->
                             @if($card->section1_images && count($card->section1_images) > 0)
-                            <div class="mobile-screenshots scrollbar-hide">
+                            @php
+                                $galleryImagesMobile = collect($card->section1_images)->map(function($img) {
+                                    return \Illuminate\Support\Facades\Storage::url($img);
+                                })->values()->all();
+                            @endphp
+                            <div class="mobile-screenshots scrollbar-hide" data-images="{{ json_encode($galleryImagesMobile) }}">
                                 @foreach($card->section1_images as $index => $thumbnail)
                                 <div class="mobile-screenshot-item">
                                     <img src="{{ Storage::url($thumbnail) }}" 
-                                         alt="Screenshot {{ $index + 1 }}">
+                                         alt="Screenshot {{ $index + 1 }}"
+                                         data-index="{{ $index }}">
                                 </div>
                                 @endforeach
                             </div>
@@ -948,46 +954,78 @@
             }
             window.scrollTo(0, 0);
 
-            // Initialize screenshot click functionality for desktop
-            // Initialize screenshot click functionality for desktop
-            document.querySelectorAll('.desktop-screenshot-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const index = parseInt(this.querySelector('img').getAttribute('data-index'));
-                    const container = this.closest('.desktop-screenshots');
-                    const images = JSON.parse(container.getAttribute('data-images'));
+            // Open Gallery Function
+            function openGallery(images, index) {
+                window.dispatchEvent(new CustomEvent('open-gallery', {
+                    detail: {
+                        images: images,
+                        index: index
+                    }
+                }));
+            }
+
+            // Event Delegation for Clicks (Desktop & Mobile)
+            document.addEventListener('click', function(e) {
+                // Desktop Screenshot Click
+                const desktopItem = e.target.closest('.desktop-screenshot-item');
+                if (desktopItem) {
+                    const container = desktopItem.closest('.desktop-screenshots');
+                    const img = desktopItem.querySelector('img');
+                    if (container && img) {
+                        const images = JSON.parse(container.getAttribute('data-images'));
+                        const index = parseInt(img.getAttribute('data-index'));
+                        openGallery(images, index);
+                    }
+                    return;
+                }
+
+                // Mobile Screenshot Click
+                const mobileItem = e.target.closest('.mobile-screenshot-item');
+                if (mobileItem) {
+                    const container = mobileItem.closest('.mobile-screenshots');
+                    // Check if the user was dragging (using a robust class check)
+                    if (container && container.classList.contains('is-dragging')) {
+                        return;
+                    }
                     
-                    window.dispatchEvent(new CustomEvent('open-gallery', {
-                        detail: {
-                            images: images,
-                            index: index
-                        }
-                    }));
-                });
+                    const img = mobileItem.querySelector('img');
+                    if (container && img) {
+                        const images = JSON.parse(container.getAttribute('data-images'));
+                        const index = parseInt(img.getAttribute('data-index'));
+                        openGallery(images, index);
+                    }
+                }
             });
 
-            // Mobile screenshot horizontal scroll with mouse drag
+            // Mobile Scroll Logic (Touch & Mouse) with Drag Detection
             const mobileScreenshots = document.querySelectorAll('.mobile-screenshots');
             
             mobileScreenshots.forEach(slider => {
                 let isDown = false;
                 let startX;
                 let scrollLeft;
+                let hasMoved = false;
 
+                // Mouse Events
                 slider.addEventListener('mousedown', (e) => {
                     isDown = true;
-                    slider.classList.add('active');
+                    hasMoved = false;
+                    slider.classList.remove('is-dragging');
                     startX = e.pageX - slider.offsetLeft;
                     scrollLeft = slider.scrollLeft;
                 });
 
                 slider.addEventListener('mouseleave', () => {
                     isDown = false;
-                    slider.classList.remove('active');
+                    slider.classList.remove('is-dragging');
                 });
 
                 slider.addEventListener('mouseup', () => {
                     isDown = false;
-                    slider.classList.remove('active');
+                    // Remove flag after a short delay to ensure click event sees it
+                    setTimeout(() => {
+                        slider.classList.remove('is-dragging');
+                    }, 50);
                 });
 
                 slider.addEventListener('mousemove', (e) => {
@@ -995,26 +1033,45 @@
                     e.preventDefault();
                     const x = e.pageX - slider.offsetLeft;
                     const walk = (x - startX) * 2;
-                    slider.scrollLeft = scrollLeft - walk;
+                    
+                    // Only mark as dragging if moved significantly (e.g., 5px)
+                    if (Math.abs(x - startX) > 5) {
+                        hasMoved = true;
+                        slider.classList.add('is-dragging');
+                        slider.scrollLeft = scrollLeft - walk;
+                    }
                 });
 
-                // Touch support for mobile
+                // Touch Events
                 slider.addEventListener('touchstart', (e) => {
                     isDown = true;
+                    hasMoved = false;
+                    slider.classList.remove('is-dragging');
                     startX = e.touches[0].pageX - slider.offsetLeft;
                     scrollLeft = slider.scrollLeft;
                 });
 
                 slider.addEventListener('touchend', () => {
                     isDown = false;
+                    setTimeout(() => {
+                        slider.classList.remove('is-dragging');
+                    }, 50);
                 });
 
                 slider.addEventListener('touchmove', (e) => {
                     if (!isDown) return;
-                    e.preventDefault();
+                    // e.preventDefault(); // Removing preventDefault to allow vertical scrolling if intent is vertical
+                    // Only prevent default if horizontal scroll is dominant? 
+                    // For now, keep it simple: if dragging horizontally, prevent default.
+                    
                     const x = e.touches[0].pageX - slider.offsetLeft;
-                    const walk = (x - startX) * 2;
-                    slider.scrollLeft = scrollLeft - walk;
+                    const walk = (x - startX) * 2; // Speed multiplier
+
+                    if (Math.abs(x - startX) > 5) {
+                        hasMoved = true;
+                        slider.classList.add('is-dragging');
+                        slider.scrollLeft = scrollLeft - walk;
+                    }
                 });
             });
         });
