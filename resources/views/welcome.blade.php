@@ -799,7 +799,12 @@
                         <div class="desktop-card">
                             <!-- Left: Screenshots (Vertical Scroll) -->
                             @if($card->section1_images && count($card->section1_images) > 0)
-                            <div class="desktop-screenshots scrollbar-thin">
+                            @php
+                                $galleryImages = collect($card->section1_images)->map(function($img) {
+                                    return \Illuminate\Support\Facades\Storage::url($img);
+                                })->values()->all();
+                            @endphp
+                            <div class="desktop-screenshots scrollbar-thin" data-images="{{ json_encode($galleryImages) }}">
                                 @foreach($card->section1_images as $index => $thumbnail)
                                 <div class="desktop-screenshot-item">
                                     <img src="{{ Storage::url($thumbnail) }}" 
@@ -944,27 +949,19 @@
             window.scrollTo(0, 0);
 
             // Initialize screenshot click functionality for desktop
+            // Initialize screenshot click functionality for desktop
             document.querySelectorAll('.desktop-screenshot-item').forEach(item => {
                 item.addEventListener('click', function() {
-                    const index = this.getAttribute('data-index');
-                    const cardId = this.closest('.card-item-wrapper').querySelector('.main-image-container img').id.replace('main-image-', '');
-                    const mainImage = document.getElementById(`main-image-${cardId}`);
+                    const index = parseInt(this.querySelector('img').getAttribute('data-index'));
+                    const container = this.closest('.desktop-screenshots');
+                    const images = JSON.parse(container.getAttribute('data-images'));
                     
-                    if (mainImage && this.querySelector('img')) {
-                        // In a real implementation, you might want to switch to a different image
-                        // For now, just add a visual feedback
-                        this.style.borderColor = '#4f46e5';
-                        this.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.3)';
-                        
-                        // Reset other thumbnails
-                        const siblings = this.parentElement.querySelectorAll('.desktop-screenshot-item');
-                        siblings.forEach(sib => {
-                            if (sib !== this) {
-                                sib.style.borderColor = '#e5e7eb';
-                                sib.style.boxShadow = 'none';
-                            }
-                        });
-                    }
+                    window.dispatchEvent(new CustomEvent('open-gallery', {
+                        detail: {
+                            images: images,
+                            index: index
+                        }
+                    }));
                 });
             });
 
@@ -1022,5 +1019,6 @@
             });
         });
     </script>
+    <x-image-gallery-modal />
 </body>
 </html>
