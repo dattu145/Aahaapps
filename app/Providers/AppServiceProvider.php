@@ -27,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
                 'logo_width' => \App\Models\Setting::get('logo_width'),
                 'logo_height' => \App\Models\Setting::get('logo_height'),
                 'whatsapp_number' => \App\Models\Setting::get('whatsapp_number'),
+                'social_email' => \App\Models\Setting::get('social_email'),
+                'social_linkedin' => \App\Models\Setting::get('social_linkedin'),
+                'social_web' => \App\Models\Setting::get('social_web'),
+                'company_address' => \App\Models\Setting::get('company_address'),
+                'company_address_size' => \App\Models\Setting::get('company_address_size'),
             ]);
             $view->with('globalMenu', \App\Models\MenuItem::ordered()->active()->get());
         });

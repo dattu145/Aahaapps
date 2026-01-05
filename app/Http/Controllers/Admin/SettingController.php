@@ -17,6 +17,11 @@ class SettingController extends Controller
             'logo_height' => Setting::get('logo_height'),
             'logo_width' => Setting::get('logo_width'),
             'whatsapp_number' => Setting::get('whatsapp_number'),
+            'social_email' => Setting::get('social_email'),
+            'social_linkedin' => Setting::get('social_linkedin'),
+            'social_web' => Setting::get('social_web'),
+            'company_address' => Setting::get('company_address'),
+            'company_address_size' => Setting::get('company_address_size'),
             'min_login_url' => Setting::get('min_login_url'),
             'marquee_speed' => Setting::get('marquee_speed'),
         ]);
@@ -30,6 +35,11 @@ class SettingController extends Controller
             'logo_height' => 'nullable|integer|min:10|max:500',
             'logo_width' => 'nullable|string|max:10', // Allow "auto" or number
             'whatsapp_number' => 'nullable|string|max:20',
+            'social_email' => 'nullable|email',
+            'social_linkedin' => 'nullable|url',
+            'social_web' => 'nullable|url',
+            'company_address' => 'nullable|string|max:500',
+            'company_address_size' => 'nullable|integer|min:8|max:50',
             'min_login_url' => 'nullable|url',
             'marquee_speed' => 'nullable|integer|min:5|max:200',
         ]);
@@ -59,6 +69,13 @@ class SettingController extends Controller
         if ($request->has('whatsapp_number')) {
             Setting::set('whatsapp_number', $request->input('whatsapp_number'));
         }
+
+        // Save Social & Address Settings
+        if ($request->has('social_email')) Setting::set('social_email', $request->input('social_email'));
+        if ($request->has('social_linkedin')) Setting::set('social_linkedin', $request->input('social_linkedin'));
+        if ($request->has('social_web')) Setting::set('social_web', $request->input('social_web'));
+        if ($request->has('company_address')) Setting::set('company_address', $request->input('company_address'));
+        if ($request->has('company_address_size')) Setting::set('company_address_size', $request->input('company_address_size'));
 
         if ($request->has('min_login_url')) {
             Setting::set('min_login_url', $request->input('min_login_url'));

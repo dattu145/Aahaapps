@@ -68,6 +68,40 @@
                                     <input type="text" name="whatsapp_number" id="whatsapp_number" value="{{ $whatsapp_number ?? '' }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="e.g. 919876543210">
                                     <p class="text-xs text-gray-400 mt-1">Enter number with country code (without +)</p>
                                 </div>
+                                
+                                <div class="pt-6 border-t border-gray-100">
+                                    <h3 class="text-sm font-semibold text-gray-900 mb-4">Social Media & Contact</h3>
+                                    
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label for="social_email" class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Email Address</label>
+                                            <input type="email" name="social_email" id="social_email" value="{{ $social_email ?? '' }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="contact@example.com">
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label for="social_linkedin" class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">LinkedIn URL</label>
+                                                <input type="url" name="social_linkedin" id="social_linkedin" value="{{ $social_linkedin ?? '' }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="https://linkedin.com/in/...">
+                                            </div>
+                                            <div>
+                                                <label for="social_web" class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Website URL</label>
+                                                <input type="url" name="social_web" id="social_web" value="{{ $social_web ?? '' }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="https://example.com">
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <div class="flex justify-between items-center mb-1">
+                                                <label for="company_address" class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Company Address</label>
+                                                
+                                                <div class="flex items-center gap-2">
+                                                    <label for="company_address_size" class="text-xs font-medium text-gray-400 uppercase tracking-wider">Font Size (px)</label>
+                                                    <input type="number" name="company_address_size" id="company_address_size" value="{{ $company_address_size ?? '12' }}" class="w-16 h-7 text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="12" min="8" max="50">
+                                                </div>
+                                            </div>
+                                            <textarea name="company_address" id="company_address" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="Enter full address...">{{ $company_address ?? '' }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             
                             <!-- Current Logo Display (Server Side) -->
