@@ -121,26 +121,29 @@
         /* Desktop Card Layout (min-width: 1024px) */
         .desktop-card {
             display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 24px;
-            padding: 24px;
-            min-height: 400px;
+            grid-template-columns: 170px 520px 1fr; /* Screenshot | Main Image | Content */
+            grid-template-rows: 1fr auto; /* Content | Footer Buttons */
+            gap: 12px;
+            padding: 16px;
+            min-height: 450px;
         }
 
         /* Left Screenshot Column (Desktop) */
         .desktop-screenshots {
+            grid-column: 1;
+            grid-row: 1;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            width: 140px;
+            gap: 10px;
+            width: 100%;
             overflow-y: auto;
             max-height: 500px;
-            padding-right: 8px;
+            padding-right: 4px;
         }
 
         .desktop-screenshot-item {
-            width: 120px;
-            height: 90px;
+            width: 150px;
+            height: 110px;
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid #e5e7eb;
@@ -161,18 +164,18 @@
 
         /* Center Main Image Column (Desktop) */
         .desktop-main-image {
-            flex: 1;
+            grid-column: 2;
+            grid-row: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 0 20px;
-            max-width: 500px;
-            margin: 0 auto;
+            padding: 0 5px;
+            width: 100%;
         }
 
         .main-image-container {
             width: 100%;
-            height: 300px;
+            height: 450px; /* Increased Height */
             border-radius: 12px;
             overflow: hidden;
             background: #f9fafb;
@@ -189,51 +192,57 @@
         }
 
         .main-image-container:hover img {
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         /* Right Content Column (Desktop) */
         .desktop-content {
-            width: 320px;
+            grid-column: 3;
+            grid-row: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            gap: 20px;
+            justify-content: center;
+            gap: 12px;
+            padding-left: 5px;
         }
 
         .content-header {
-            text-align: center;
+            text-align: left;
         }
 
         .card-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            line-height: 1.3;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1.2;
         }
 
         .card-description {
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.6;
-            color: #6b7280;
+            color: #4b5563;
         }
 
+        /* Footer Actions (Desktop) */
         .content-actions {
+            grid-column: 1 / -1;
+            grid-row: 2;
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            justify-content: space-between;
             align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 4px;
         }
 
         .action-buttons {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            justify-content: center;
         }
 
         .action-btn {
-            padding: 10px 20px;
+            padding: 10px 24px;
             border-radius: 8px;
             font-weight: 600;
             font-size: 14px;
@@ -242,7 +251,7 @@
             text-decoration: none;
             display: inline-block;
             text-align: center;
-            min-width: 120px;
+            min-width: 100px;
         }
 
         .action-btn:hover {
@@ -253,14 +262,15 @@
         .enquiry-btn {
             background: linear-gradient(135deg, #4f46e5, #7c3aed);
             color: white;
-            padding: 12px 28px;
-            border-radius: 10px;
+            padding: 10px 24px;
+            border-radius: 8px;
             font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            margin-top: 10px;
+            margin-top: 0;
+            min-width: 140px;
         }
 
         .enquiry-btn:hover {
@@ -486,22 +496,22 @@
         .content-wrapper {
             position: relative;
             z-index: 10;
-            padding-top: 180px;
+            padding-top: 120px; /* Reduced Gap */
             padding-bottom: 80px;
         }
 
         /* Menu spacing */
         .menu-spacer {
-            height: 140px;
+            height: 80px; /* Reduced Gap */
         }
 
         @media (max-width: 768px) {
             .menu-spacer {
-                height: 80px;
+                height: 60px;
             }
             
             .content-wrapper {
-                padding-top: 120px;
+                padding-top: 100px;
             }
         }
     </style>
@@ -824,30 +834,31 @@
                                     </p>
                                     @endif
                                 </div>
+                            </div>
 
-                                <div class="content-actions">
-                                    @if($card->buttons && count($card->buttons) > 0)
-                                    <div class="action-buttons">
-                                        @foreach($card->buttons as $button)
-                                        <a href="{{ $button['link'] ?? '#' }}" 
-                                           class="action-btn"
-                                           style="background-color: {{ $button['bg_color'] ?? '#111827' }}; color: {{ $button['text_color'] ?? '#ffffff' }}">
-                                            {{ $button['text'] ?? 'Button' }}
-                                        </a>
-                                        @endforeach
-                                    </div>
-                                    @endif
-                                    
-                                    @if($card->enquiry_link)
-                                    <a href="{{ $card->enquiry_link }}" 
-                                       class="enquiry-btn">
-                                        Enquiry
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                        </svg>
+                            <!-- Footer: Buttons (Spans full width) -->
+                            <div class="content-actions">
+                                @if($card->buttons && count($card->buttons) > 0)
+                                <div class="action-buttons">
+                                    @foreach($card->buttons as $button)
+                                    <a href="{{ $button['link'] ?? '#' }}" 
+                                       class="action-btn"
+                                       style="background-color: {{ $button['bg_color'] ?? '#111827' }}; color: {{ $button['text_color'] ?? '#ffffff' }}">
+                                        {{ $button['text'] ?? 'Button' }}
                                     </a>
-                                    @endif
+                                    @endforeach
                                 </div>
+                                @endif
+                                
+                                @if($card->enquiry_link)
+                                <a href="{{ $card->enquiry_link }}" 
+                                   class="enquiry-btn">
+                                    Enquiry
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                    </svg>
+                                </a>
+                                @endif
                             </div>
                         </div>
 
