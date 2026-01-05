@@ -43,7 +43,9 @@ class PublicController extends Controller
                 'logo', 
                 'marquee_speed', 
                 'iframe_width', 
-                'iframe_height'
+                'iframe_height',
+                'card_height',
+                'card_border_radius'
             ])->pluck('value', 'key');
         });
         
@@ -56,8 +58,10 @@ class PublicController extends Controller
         $marquee_speed = $settings->get('marquee_speed', 40);
         $iframe_width = $settings->get('iframe_width', '220px');
         $iframe_height = $settings->get('iframe_height', '100vh');
+        $card_height = $settings->get('card_height', 350);
+        $card_border_radius = $settings->get('card_border_radius', 16);
         
-        return view('welcome', compact('welcomeImages', 'circularItems', 'services', 'menuItems', 'globalMenu', 'globalSettings', 'marquee_speed', 'iframe_width', 'iframe_height'));
+        return view('welcome', compact('welcomeImages', 'circularItems', 'services', 'menuItems', 'globalMenu', 'globalSettings', 'marquee_speed', 'iframe_width', 'iframe_height', 'card_height', 'card_border_radius'));
     }
 
     public function show($slug)

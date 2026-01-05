@@ -15,7 +15,7 @@
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Card Dimensions</h3>
                     <form method="POST" action="{{ route('admin.circular-items.update-dimensions') }}">
                         @csrf
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-3 gap-4 mb-4">
                             <div>
                                 <label for="card_width" class="block text-sm font-medium text-gray-700 mb-1">Card Width (px)</label>
                                 <input type="number" name="card_width" id="card_width" value="{{ \App\Models\Setting::get('card_width', 280) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="280">
@@ -30,11 +30,6 @@
                                 <label for="card_border_radius" class="block text-sm font-medium text-gray-700 mb-1">Border Radius (px)</label>
                                 <input type="number" name="card_border_radius" id="card_border_radius" value="{{ \App\Models\Setting::get('card_border_radius', 16) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="16">
                                 <p class="text-xs text-gray-400 mt-1">Default: 16px</p>
-                            </div>
-                            <div>
-                                <label for="card_animation_speed" class="block text-sm font-medium text-gray-700 mb-1">Animation Speed</label>
-                                <input type="number" step="0.1" name="card_animation_speed" id="card_animation_speed" value="{{ \App\Models\Setting::get('card_animation_speed', 1) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="1.0">
-                                <p class="text-xs text-gray-400 mt-1">Default: 1.0 (higher = faster)</p>
                             </div>
                         </div>
                         <p class="text-xs text-gray-500 mb-3">These settings apply to all cards on the homepage</p>
@@ -62,9 +57,10 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preview</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sort</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Link</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
@@ -72,9 +68,22 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($items as $item)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $item->sort_order }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $item->title }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->link }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($item->section2_image)
+                                            <img src="{{ Str::startsWith($item->section2_image, 'http') ? $item->section2_image : Storage::url($item->section2_image) }}" 
+                                                 alt="{{ $item->title }}" 
+                                                 class="h-12 w-12 object-cover rounded-md">
+                                        @else
+                                            <div class="h-12 w-12 bg-gray-200 rounded-md flex items-center justify-center">
+                                                <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ $item->sort_order }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap font-semibold">{{ Str::limit($item->title, 30) }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-500">{{ Str::limit($item->description, 50) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $item->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                             {{ $item->is_active ? 'Active' : 'Inactive' }}

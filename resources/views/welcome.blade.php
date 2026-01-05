@@ -28,34 +28,31 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Enhanced Menu Animation Styles - Two-Stage Animation */
-        /* Stage 0: Collapsed */
+        /* Enhanced Menu Animation Styles */
         .menu-collapsed {
-            width: 680px; /* Increased from 600px for better spacing */
+            width: 680px;
             max-height: 50px;
             transition: width 1s cubic-bezier(0.5, 1.2, 0.64, 1),
                         max-height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Stage 1: Expanding Horizontally (1s duration, height stays same) */
         .menu-expanding-horizontal {
             width: calc(100vw - 6rem);
             max-width: 1400px;
-            max-height: 50px; /* SAME as collapsed - no vertical expansion yet! */
+            max-height: 50px;
             transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Stage 2: Expanded (height increases after 2s delay: 1s horizontal + 1s pause) */
         .menu-expanded {
             width: calc(100vw - 6rem);
             max-width: 1400px;
-            max-height: 900px; /* NOW it expands vertically */
-            transition: max-height 1s cubic-bezier(0.14, 0.10, 1.65, 5) 2s; /* 2s delay = 1s horizontal + 1s pause */
+            max-height: 900px;
+            transition: max-height 1s cubic-bezier(0.14, 0.10, 1.65, 5) 2s;
         }
 
         .menu-content-hidden {
             opacity: 0;
-            transform: translateY(-20px); /* Reduced from -20px */
+            transform: translateY(-20px);
             pointer-events: none;
             transition: opacity 0.3s ease-out, transform 0.3s ease-out;
         }
@@ -64,10 +61,9 @@
             opacity: 1;
             transform: translateY(0);
             pointer-events: auto;
-            transition: opacity 0.4s ease-out 0.3s, transform 0.4s ease-out 0.3s; /* Faster: 0.4s transition, 0.8s delay */
+            transition: opacity 0.4s ease-out 0.3s, transform 0.4s ease-out 0.3s;
         }
 
-        /* Smooth hover transitions */
         .menu-item-hover {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -76,27 +72,7 @@
             transform: translateX(4px);
         }
         
-        /* HORIZONTAL CAROUSEL STYLES - INFINITE LOOP AT BOTTOM */
-        /* HORIZONTAL CAROUSEL STYLES - INFINITE LOOP AT BOTTOM */
-        .horizontal-carousel-wrapper {
-            position: fixed;
-            bottom: 0; /* Remove margin as requested */
-            left: 0;
-            width: 100%;
-            height: calc({{ \App\Models\Setting::get('card_height', 200) }}px + 60px);
-            z-index: 30;
-            overflow: hidden;
-            background: transparent; /* Remove background */
-            pointer-events: auto;
-        }
-        
-        /* Mobile Only (< 768px) where bottom nav exists */
-        @media (max-width: 767px) {
-            .horizontal-carousel-wrapper {
-                bottom: 80px; /* Space for mobile bottom nav (64px + 16px buffer) */
-                height: 200px;
-            }
-        }
+
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             overflow-x: hidden;
@@ -108,117 +84,7 @@
         
         @media (max-width: 768px) {
             body {
-                /* No extra padding needed on body */
-            }
-        }
-        .horizontal-carousel-track {
-            display: flex;
-            gap: 20px;
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            will-change: transform;
-            cursor: grab;
-            padding: 0 20px;
-        }
-        
-        .horizontal-carousel-track:active {
-            cursor: grabbing;
-        }
-
-        .carousel-card {
-            flex-shrink: 0;
-            width: {{ \App\Models\Setting::get('card_width', 280) }}px;
-            height: {{ \App\Models\Setting::get('card_height', 200) }}px;
-            background: rgba(255, 255, 255, 0.95); /* Default white background */
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: {{ \App\Models\Setting::get('card_border_radius', 16) }}px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-            isolation: isolate;
-        }
-        
-        @media (max-width: 768px) {
-            .carousel-card {
-                width: clamp(180px, 45vw, 220px); /* Responsive width */
-                height: clamp(120px, 30vw, 160px); /* Responsive height */
-                padding: 12px;
-                font-size: 0.85rem;
-            }
-            
-            .carousel-card h3 {
-                font-size: 0.9rem !important;
-                margin-bottom: 0.25rem !important;
-            }
-            
-            .carousel-card p {
-                font-size: 0.7rem !important;
-            }
-            
-            .carousel-card .explore-btn {
-                font-size: 0.6rem !important;
-                padding: 0.25rem 0.75rem !important;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .carousel-card {
-                width: clamp(160px, 50vw, 200px);
-                height: clamp(110px, 35vw, 140px);
-                padding: 10px;
-            }
-        }
-        
-        .carousel-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            z-index: -1;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            transition: all 0.3s ease;
-        }
-
-        .carousel-card:hover {
-            transform: translateY(-10px) scale(1.05);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 16px 40px rgba(0,0,0,0.6);
-        }
-        
-        /* Explore button hover styles */
-        .carousel-card .explore-btn {
-            transition: all 0.3s ease;
-        }
-        
-        .carousel-card .explore-btn:hover {
-            background-color: #000 !important;
-            color: #fff !important;
-            border-color: #000 !important;
-        }
-
-        #hero {
-            position: relative;
-            overflow: hidden;
-            height: 100vh;
-            /* Reserve space for bottom carousel: card_height + 60px (wrapper) + 20px (offset) + buffer */
-            /* Reduced buffer since we moved carousel down (was 240px offset, now lower) */
-            padding-bottom: calc({{ \App\Models\Setting::get('card_height', 200) }}px + 180px);
-            box-sizing: border-box; 
-        }
-        
-        @media (max-width: 767px) {
-            #hero {
-                /* Mobile: needs more space due to higher carousel position */
-                padding-bottom: 300px;
+                overflow-x: hidden;
             }
         }
 
@@ -228,10 +94,419 @@
             height: 100vh;
         }
 
+        /* NEW: Enhanced Card Layout Styles */
+        .card-layout-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
+        .card-item-wrapper {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-item-wrapper:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Desktop Card Layout (min-width: 1024px) */
+        .desktop-card {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 24px;
+            padding: 24px;
+            min-height: 400px;
+        }
+
+        /* Left Screenshot Column (Desktop) */
+        .desktop-screenshots {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 140px;
+            overflow-y: auto;
+            max-height: 500px;
+            padding-right: 8px;
+        }
+
+        .desktop-screenshot-item {
+            width: 120px;
+            height: 90px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .desktop-screenshot-item:hover {
+            transform: scale(1.05);
+            border-color: #4f46e5;
+        }
+
+        .desktop-screenshot-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Center Main Image Column (Desktop) */
+        .desktop-main-image {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .main-image-container {
+            width: 100%;
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+        }
+
+        .main-image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Right Content Column (Desktop) */
+        .desktop-content {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .content-header {
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .card-description {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #6b7280;
+        }
+
+        .content-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .enquiry-btn {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .enquiry-btn:hover {
+            background: linear-gradient(135deg, #4338ca, #6d28d9);
+        }
+
+        /* Mobile Card Layout (max-width: 1023px) */
+        .mobile-card {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        /* Mobile Screenshot Row */
+        .mobile-screenshots {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            margin-bottom: 8px;
+            scrollbar-width: none;
+        }
+
+        .mobile-screenshots::-webkit-scrollbar {
+            display: none;
+        }
+
+        .mobile-screenshot-item {
+            flex-shrink: 0;
+            width: 120px;
+            height: 90px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .mobile-screenshot-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Mobile Main Image */
+        .mobile-main-image {
+            width: 100%;
+            height: 250px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-main-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Mobile Content */
+        .mobile-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .mobile-title {
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .mobile-description {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .mobile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .mobile-action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .mobile-action-btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            min-width: 110px;
+        }
+
+        .mobile-enquiry-btn {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        /* Custom scrollbar styling */
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 10px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1023px) {
+            .desktop-card {
+                display: none;
+            }
+            
+            .mobile-card {
+                display: flex;
+            }
+            
+            .card-layout-container {
+                padding: 16px;
+                gap: 20px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .desktop-card {
+                display: grid;
+            }
+            
+            .mobile-card {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .mobile-main-image {
+                height: 200px;
+            }
+            
+            .mobile-action-buttons {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+            
+            .mobile-action-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+            
+            .mobile-enquiry-btn {
+                max-width: 100%;
+            }
+        }
+
+        /* Video Hero Section */
+        .video-hero-section {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            padding-top: 180px;
+            padding-bottom: 80px;
+        }
+
+        /* Menu spacing */
+        .menu-spacer {
+            height: 140px;
+        }
+
+        @media (max-width: 768px) {
+            .menu-spacer {
+                height: 80px;
+            }
+            
+            .content-wrapper {
+                padding-top: 120px;
+            }
+        }
     </style>
 </head>
-<body class="antialiased bg-gray-50 text-gray-900 font-sans selection:bg-indigo-100 selection:text-indigo-700 overflow-hidden" 
+<body class="antialiased bg-gray-50 text-gray-900 font-sans selection:bg-indigo-100 selection:text-indigo-700 overflow-x-hidden" 
       id="main-body"
       x-data="{ 
           menuOpen: false, 
@@ -249,9 +524,8 @@
           }
       }">
 
-    <!-- DESKTOP ANIMATED MENU (lg and above only) -->
+    <!-- DESKTOP ANIMATED MENU -->
     <div class="hidden lg:block">
-        <!-- Menu Container -->
         <div class="absolute top-8 left-1/2 transform -translate-x-1/2 z-[9999]"
              style="z-index: 9999;"
              @click.outside="if (menuOpen) toggleMenu()"
@@ -261,17 +535,13 @@
                  'menu-expanded': menuState === 'expanded'
              }">
             
-            <!-- Menu Bar -->
             <div class="bg-white shadow-2xl border border-gray-200 transition-all duration-700 ease-out"
                  :class="menuOpen ? 'rounded-2xl' : 'rounded-3xl'"
                  style="will-change: border-radius, width, height;">
                 
-                <!-- Collapsed Header Bar -->
                 <div class="flex items-center justify-between px-8 py-3">
-                    <!-- Left: Hamburger + Menu Text -->
                     <button @click="toggleMenu()" 
                             class="flex items-center gap-3 text-gray-900 hover:text-indigo-600 transition-all duration-300 group">
-                        <!-- Hamburger Icon -->
                         <div class="flex flex-col gap-1.5 w-6 transition-transform duration-500" :class="menuOpen ? 'rotate-90' : ''">
                             <span class="block h-0.5 bg-current transition-all duration-500 ease-out" 
                                   :class="menuOpen ? 'rotate-45 translate-y-2' : ''"></span>
@@ -284,7 +554,6 @@
                         <span class="font-bold text-lg transition-opacity duration-300" x-show="menuOpen" x-cloak>Close</span>
                     </button>
 
-                    <!-- Center: Logo -->
                     <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center">
                         @if(isset($globalSettings['logo_url']) && $globalSettings['logo_url'])
                             <img src="{{ $globalSettings['logo_url'] }}" alt="Logo" class="object-contain h-9 transition-all duration-300">
@@ -295,7 +564,6 @@
                         @endif
                     </div>
 
-                    <!-- Right: Contact & Login -->
                     <div class="flex items-center gap-5">
                         <a href="/contact" class="text-gray-900 hover:text-indigo-600 transition-all duration-300 font-medium px-3 py-1.5 rounded-lg hover:bg-gray-100">
                             Contact
@@ -306,15 +574,12 @@
                     </div>
                 </div>
 
-                <!-- Expanded Menu Content -->
                 <div x-show="menuOpen" 
                      x-cloak
                      :class="menuState === 'expanded' ? 'menu-content-visible' : 'menu-content-hidden'"
                      class="px-12 pb-12 pt-6">
                     
-                    <!-- Menu Grid -->
                     <div class="grid grid-cols-3 gap-14 mt-6">
-
                         <div class="space-y-3">
                             <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6 px-2">Main Menu</h3>
                             <div class="space-y-6">
@@ -333,7 +598,6 @@
                             </div>
                         </div>
 
-                        <!-- Column 2: More -->
                         <div class="space-y-3">
                             <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6 px-2">More</h3>
                             <div class="space-y-6">
@@ -346,7 +610,6 @@
                                 </a>
                                 @endforeach
                                 
-                                <!-- Social Icons -->
                                 <div class="flex gap-4 mt-10 px-2">
                                     <a href="#" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-indigo-600 hover:text-white text-gray-600 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
@@ -361,7 +624,6 @@
                             </div>
                         </div>
 
-                        <!-- Column 3: FEATURED -->
                         <div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
                             <span class="inline-block px-4 py-1.5 bg-purple-800 text-purple-100 text-xs font-bold rounded-full mb-5">
                                 MILESTONE
@@ -373,7 +635,6 @@
                                 Join them
                             </button>
                             
-                            <!-- Member Avatars -->
                             <div class="flex -space-x-2 mt-7">
                                 <div class="w-11 h-11 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 border-2 border-white transition-transform duration-300 hover:scale-110 hover:z-10"></div>
                                 <div class="w-11 h-11 rounded-full bg-gradient-to-br from-green-400 to-cyan-500 border-2 border-white transition-transform duration-300 hover:scale-110 hover:z-10"></div>
@@ -381,10 +642,8 @@
                                 <div class="w-11 h-11 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 border-2 border-white transition-transform duration-300 hover:scale-110 hover:z-10"></div>
                             </div>
                         </div>
-
                     </div>
 
-                    <!-- Bottom Section: Earnings Badge -->
                     <div class="mt-10 pt-7 border-t border-gray-200 flex items-center justify-between">
                         <div class="flex items-center gap-3 text-gray-500 text-sm">
                             <span class="px-4 py-1.5 bg-gray-100 rounded-full font-semibold">Earnings</span>
@@ -392,15 +651,12 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
     <!-- MOBILE/TABLET TOP HEADER -->
-    <!-- MOBILE/TABLET TOP HEADER -->
     <header class="lg:hidden fixed top-0 w-full h-16 bg-white/90 backdrop-blur-md border-b border-gray-200 z-50 flex items-center justify-between px-4 sm:px-6">
-        <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2">
            @if(isset($globalSettings['logo']) && $globalSettings['logo'])
                 <img src="{{ asset('storage/' . $globalSettings['logo']) }}" alt="Logo" class="object-contain max-h-9" style="height: auto; width: auto; max-width: 200px;">
@@ -411,7 +667,6 @@
             @endif
         </a>
 
-        <!-- Hamburger Button (Right aligned) -->
         <button @click="sidebarOpen = true" class="p-2 -mr-2 text-gray-600 hover:text-indigo-600 focus:outline-none transition-colors duration-200">
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
@@ -419,12 +674,11 @@
         </button>
     </header>
 
-    <!-- RIGHT SLIDE-OVER DRAWER (Mobile/Tablet) -->
+    <!-- RIGHT SLIDE-OVER DRAWER -->
     <div class="relative z-50 lg:hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" 
          x-show="sidebarOpen" 
          style="display: none;">
          
-        <!-- Backdrop -->
         <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"
              x-show="sidebarOpen"
              x-transition:enter="ease-out duration-300"
@@ -435,7 +689,6 @@
              x-transition:leave-end="opacity-0"
              @click="sidebarOpen = false"></div>
 
-        <!-- Panel -->
         <div class="fixed inset-y-0 right-0 z-[100] w-full max-w-xs bg-white shadow-2xl transform transition-transform"
              x-show="sidebarOpen"
              x-transition:enter="transform transition ease-in-out duration-300"
@@ -448,7 +701,7 @@
              <div class="h-full flex flex-col overflow-y-scroll py-6 bg-white shadow-xl">
                 <div class="px-4 sm:px-6 border-b border-gray-100 pb-4 flex items-center justify-between">
                     <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Menu</h2>
-                    <button type="button" class="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo- 500" @click="sidebarOpen = false">
+                    <button type="button" class="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" @click="sidebarOpen = false">
                         <span class="sr-only">Close panel</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -491,13 +744,11 @@
                 <a href="{{ $item->url }}" class="group flex flex-col items-center justify-center w-full h-full space-y-1 relative
                 {{ request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')) ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600' }}">
                     
-                    {{-- Active Indicator Line --}}
                     @if(request()->fullUrlIs($item->url) || request()->is(ltrim($item->url, '/')))
                         <span class="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-indigo-600 rounded-full"></span>
                     @endif
 
                     <div class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:-translate-y-1">
-                        {{-- Simple Icon Logic (First Char) - Replace with actual icons later if needed --}}
                         <span class="text-sm font-bold uppercase">{{ substr($item->label, 0, 1) }}</span>
                     </div>
                     <span class="text-[10px] font-medium tracking-wide">{{ $item->label }}</span>
@@ -507,11 +758,9 @@
     </nav>
 
     <!-- VIDEO HERO SECTION -->
-    <div class="relative w-full h-screen overflow-hidden">
-
-
-        <!-- Background Video - Optimized for Lazy Loading -->
-        <video class="absolute top-0 left-0 w-full h-full object-cover z-0" 
+    <div class="video-hero-section">
+        <!-- Background Video -->
+        <video class="video-background" 
                autoplay 
                muted 
                loop 
@@ -522,64 +771,158 @@
             Your browser does not support the video tag.
         </video>
 
-        <!-- Use a darker overlay for better text contrast -->
-        <div class="absolute inset-0 bg-black/50 z-10"></div>
+        <!-- Dark Overlay -->
+        <div class="video-overlay"></div>
 
-        <!-- Hero Content -->
-        <div class="relative z-20 h-full flex flex-col px-4 sm:px-6 lg:px-8 pointer-events-none">
-            <!-- Spacer for fixed menu - reduced height to allow content to sit higher -->
-            <div class="h-24 md:h-20 flex-shrink-0"></div>
-            
-            <!-- Content centered in remaining space -->
-            <div class="flex-1 flex flex-col items-center justify-center pb-0 md:pb-12">
-                
-                <h1 class="text-6xl md:text-7xl lg:text-8xl font-black text-center mb-6 tracking-tight drop-shadow-2xl">
-                    <span class="text-white font-bold">Aaha</span> 
-                    <span class="text-white font-bold">Apps</span>
-                </h1>
-                
-                <p class="text-lg md:text-2xl text-center text-gray-200 mb-10 max-w-2xl font-medium leading-relaxed drop-shadow-md">
-                    Igniting <span class="font-bold text-white border-b-2 border-indigo-500">digital excellence</span> with premium Video & Web solutions.
-                </p>
-            </div>
-        </div>
-        <!-- Horizontal Draggable Carousel at Bottom -->
-        <div class="horizontal-carousel-wrapper" id="horizontalCarouselWrapper">
-            <div class="horizontal-carousel-track" id="horizontalCarouselTrack">
-                @php
-                    $loopItems = collect();
-                    $sourceItems = (isset($circularItems) && $circularItems->count() > 0) ? $circularItems : collect();
-                    
-                    if ($sourceItems->count() > 0) {
-                        // Duplicate items for infinite loop
-                        $loopItems = $sourceItems->concat($sourceItems)->concat($sourceItems);
-                    }
-                @endphp
-                @foreach($loopItems as $index => $item)
-                    <div class="carousel-card" @if($item->color) style="background: {{ $item->color }} !important;" @endif>
-                        <a href="{{ $item->link ?? '#' }}" @if(Str::startsWith($item->link ?? '', 'http')) target="_blank" @endif class="group flex flex-col justify-around items-center w-full h-full text-decoration-none card-link" data-href="{{ $item->link ?? '#' }}">
-                            <h3 class="text-base md:text-lg font-bold mb-1 transition-colors" @if($item->text_color) style="color: {{ $item->text_color}} !important;" @endif>{{ $item->title }}</h3>
-                            
-                            @if($item->description)
-                            <p class="text-xs mb-2 line-clamp-2" @if($item->text_color) style="color: {{ $item->text_color }} !important;" @endif>{{ Str::limit($item->description, 60) }}</p>
+        <!-- Menu Spacer -->
+        <div class="menu-spacer"></div>
+
+        <!-- Cards Content -->
+        <div class="content-wrapper">
+            <div class="card-layout-container">
+                @if(isset($circularItems) && $circularItems->count() > 0)
+                    @foreach($circularItems as $card)
+                    <!-- Card Item: {{ $card->title }} -->
+                    <div class="card-item-wrapper animate-fade-in-up" style="animation-delay: {{ $loop->index * 0.1 }}s;">
+                        
+                        <!-- DESKTOP VERSION (1024px and above) -->
+                        <div class="desktop-card">
+                            <!-- Left: Screenshots (Vertical Scroll) -->
+                            @if($card->section1_images && count($card->section1_images) > 0)
+                            <div class="desktop-screenshots scrollbar-thin">
+                                @foreach($card->section1_images as $index => $thumbnail)
+                                <div class="desktop-screenshot-item">
+                                    <img src="{{ Storage::url($thumbnail) }}" 
+                                         alt="Screenshot {{ $index + 1 }}"
+                                         data-index="{{ $index }}">
+                                </div>
+                                @endforeach
+                            </div>
                             @endif
 
-                            <span class="explore-btn relative z-10 inline-block cursor-pointer text-[10px] md:text-xs uppercase tracking-widest border px-3 py-1.5 rounded-full bg-transparent transition-colors duration-300" @if($item->text_color) style="color: {{ $item->text_color }} !important; border-color: {{ $item->text_color }} !important;" @endif>
-                                {{ $item->button_text }}
-                            </span>
-                        </a>
+                            <!-- Center: Main Image -->
+                            <div class="desktop-main-image">
+                                @if($card->section2_image)
+                                <div class="main-image-container">
+                                    <img src="{{ Str::startsWith($card->section2_image, 'http') ? $card->section2_image : Storage::url($card->section2_image) }}" 
+                                         alt="{{ $card->title }}"
+                                         id="main-image-{{ $card->id }}">
+                                </div>
+                                @endif
+                            </div>
+
+                            <!-- Right: Content -->
+                            <div class="desktop-content">
+                                <div class="content-header">
+                                    <h2 class="card-title" style="color: {{ $card->title_color ?? '#111827' }}">
+                                        {{ $card->title }}
+                                    </h2>
+                                    
+                                    @if($card->description)
+                                    <p class="card-description" style="color: {{ $card->desc_color ?? '#6b7280' }}">
+                                        {{ $card->description }}
+                                    </p>
+                                    @endif
+                                </div>
+
+                                <div class="content-actions">
+                                    @if($card->buttons && count($card->buttons) > 0)
+                                    <div class="action-buttons">
+                                        @foreach($card->buttons as $button)
+                                        <a href="{{ $button['link'] ?? '#' }}" 
+                                           class="action-btn"
+                                           style="background-color: {{ $button['bg_color'] ?? '#111827' }}; color: {{ $button['text_color'] ?? '#ffffff' }}">
+                                            {{ $button['text'] ?? 'Button' }}
+                                        </a>
+                                        @endforeach
+                                    </div>
+                                    @endif
+                                    
+                                    @if($card->enquiry_link)
+                                    <a href="{{ $card->enquiry_link }}" 
+                                       class="enquiry-btn">
+                                        Enquiry
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                        </svg>
+                                    </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MOBILE VERSION (1023px and below) -->
+                        <div class="mobile-card">
+                            <!-- Top: Screenshots (Horizontal Scroll) -->
+                            @if($card->section1_images && count($card->section1_images) > 0)
+                            <div class="mobile-screenshots scrollbar-hide">
+                                @foreach($card->section1_images as $index => $thumbnail)
+                                <div class="mobile-screenshot-item">
+                                    <img src="{{ Storage::url($thumbnail) }}" 
+                                         alt="Screenshot {{ $index + 1 }}">
+                                </div>
+                                @endforeach
+                            </div>
+                            @endif
+
+                            <!-- Center: Main Image -->
+                            @if($card->section2_image)
+                            <div class="mobile-main-image">
+                                <img src="{{ Str::startsWith($card->section2_image, 'http') ? $card->section2_image : Storage::url($card->section2_image) }}" 
+                                     alt="{{ $card->title }}">
+                            </div>
+                            @endif
+
+                            <!-- Bottom: Content -->
+                            <div class="mobile-content">
+                                <h2 class="mobile-title" style="color: {{ $card->title_color ?? '#111827' }}">
+                                    {{ $card->title }}
+                                </h2>
+                                
+                                @if($card->description)
+                                <p class="mobile-description" style="color: {{ $card->desc_color ?? '#6b7280' }}">
+                                    {{ $card->description }}
+                                </p>
+                                @endif
+
+                                <div class="mobile-actions">
+                                    @if($card->buttons && count($card->buttons) > 0)
+                                    <div class="mobile-action-buttons">
+                                        @foreach($card->buttons as $button)
+                                        <a href="{{ $button['link'] ?? '#' }}" 
+                                           class="mobile-action-btn"
+                                           style="background-color: {{ $button['bg_color'] ?? '#111827' }}; color: {{ $button['text_color'] ?? '#ffffff' }}">
+                                            {{ $button['text'] ?? 'Button' }}
+                                        </a>
+                                        @endforeach
+                                    </div>
+                                    @endif
+                                    
+                                    @if($card->enquiry_link)
+                                    <a href="{{ $card->enquiry_link }}" 
+                                       class="mobile-enquiry-btn">
+                                        Enquiry
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                        </svg>
+                                    </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                @endforeach
+                    @endforeach
+                @else
+                    <!-- No cards message -->
+                    <div class="text-white text-center py-12 w-full">
+                        <p class="text-xl">No cards available. Please add cards from the admin panel.</p>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 
-
-
     @livewireScripts
-
-
-
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -589,148 +932,84 @@
             }
             window.scrollTo(0, 0);
 
-            // Horizontal Carousel Logic
-            const track = document.getElementById('horizontalCarouselTrack');
-            const wrapper = document.getElementById('horizontalCarouselWrapper');
-            
-            if (!track || !wrapper) return;
-            
-            const cards = track.querySelectorAll('.carousel-card');
-            if (cards.length === 0) return;
-            
-            // Calculate total width
-            const cardWidth = cards[0].offsetWidth;
-            const gap = 20;
-            const singleSetWidth = (cardWidth + gap) * (cards.length / 3); // Divide by 3 because we tripled items
-            
-            
-            // Animation variables
-            let currentX = 0;
-            let targetX = 0;
-            let isDragging = false;
-            let isDragged = false; // Track if actually dragged
-            let isPaused = false;
-            let startX = 0;
-            let velocity = 0;
-            const friction = 0.95;
-            const autoScrollSpeed = {{ \App\Models\Setting::get('card_animation_speed', 1) }}; // From CMS settings
-            
-            function animate() {
-                if (!isDragging && !isPaused) {
-                    // Auto-scroll from left to right
-                    targetX -= autoScrollSpeed;
+            // Initialize screenshot click functionality for desktop
+            document.querySelectorAll('.desktop-screenshot-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    const cardId = this.closest('.card-item-wrapper').querySelector('.main-image-container img').id.replace('main-image-', '');
+                    const mainImage = document.getElementById(`main-image-${cardId}`);
                     
-                    // Add velocity if exists
-                    if (Math.abs(velocity) > 0.01) {
-                        targetX += velocity;
-                        velocity *= friction;
-                    }
-                    
-                    // Infinite loop: reset when scrolled one set
-                    if (Math.abs(targetX) >= singleSetWidth) {
-                        targetX = targetX % singleSetWidth;
-                        currentX = targetX;
-                    }
-                }
-                
-                // Smooth interpolation
-                currentX += (targetX - currentX) * 0.1;
-                track.style.transform = `translateX(${currentX}px)`;
-                
-                requestAnimationFrame(animate);
-            }
-            animate();
-            
-            // Drag functionality
-            let lastX = 0;
-            const dragThreshold = 5; // Minimum pixels to consider it a drag
-            
-            wrapper.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                isDragged = false;
-                startX = e.clientX;
-                lastX = e.clientX;
-                velocity = 0;
-                track.style.cursor = 'grabbing';
-            });
-            
-            window.addEventListener('mouseup', () => {
-                if (isDragging) {
-                    isDragging = false;
-                    track.style.cursor = 'grab';
-                }
-            });
-            
-            window.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                
-                const deltaX = e.clientX - lastX;
-                const totalDrag = Math.abs(e.clientX - startX);
-                
-                // If dragged more than 5 pixels, mark as dragged
-                if (totalDrag > 5) {
-                    isDragged = true;
-                }
-                
-                lastX = e.clientX;
-                targetX += deltaX;
-                velocity = deltaX * 0.5;
-            });
-            
-            // Touch support
-            wrapper.addEventListener('touchstart', (e) => {
-                isDragging = true;
-                isDragged = false;
-                startX = e.touches[0].clientX;
-                lastX = e.touches[0].clientX;
-                velocity = 0;
-            });
-            
-            window.addEventListener('touchend', () => {
-                if (isDragging) {
-                    isDragging = false;
-                }
-            });
-            
-            window.addEventListener('touchmove', (e) => {
-                if (!isDragging) return;
-                
-                const touch = e.touches[0];
-                const deltaX = touch.clientX - lastX;
-                const totalDrag = Math.abs(touch.clientX - startX);
-                
-                if (totalDrag > 5) {
-                    isDragged = true;
-                }
-                
-                lastX = touch.clientX;
-                targetX += deltaX;
-                velocity = deltaX * 0.5;
-            });
-            
-            // Prevent link clicks when dragging
-            document.querySelectorAll('.card-link').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    if (isDragged) {
-                        e.preventDefault();
-                        isDragged = false; // Reset
+                    if (mainImage && this.querySelector('img')) {
+                        // In a real implementation, you might want to switch to a different image
+                        // For now, just add a visual feedback
+                        this.style.borderColor = '#4f46e5';
+                        this.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.3)';
+                        
+                        // Reset other thumbnails
+                        const siblings = this.parentElement.querySelectorAll('.desktop-screenshot-item');
+                        siblings.forEach(sib => {
+                            if (sib !== this) {
+                                sib.style.borderColor = '#e5e7eb';
+                                sib.style.boxShadow = 'none';
+                            }
+                        });
                     }
                 });
             });
+
+            // Mobile screenshot horizontal scroll with mouse drag
+            const mobileScreenshots = document.querySelectorAll('.mobile-screenshots');
             
-            // Pause animation on card hover
-            cards.forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    isPaused = true;
+            mobileScreenshots.forEach(slider => {
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+
+                slider.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    slider.classList.add('active');
+                    startX = e.pageX - slider.offsetLeft;
+                    scrollLeft = slider.scrollLeft;
                 });
-                
-                card.addEventListener('mouseleave', () => {
-                    isPaused = false;
+
+                slider.addEventListener('mouseleave', () => {
+                    isDown = false;
+                    slider.classList.remove('active');
+                });
+
+                slider.addEventListener('mouseup', () => {
+                    isDown = false;
+                    slider.classList.remove('active');
+                });
+
+                slider.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - slider.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    slider.scrollLeft = scrollLeft - walk;
+                });
+
+                // Touch support for mobile
+                slider.addEventListener('touchstart', (e) => {
+                    isDown = true;
+                    startX = e.touches[0].pageX - slider.offsetLeft;
+                    scrollLeft = slider.scrollLeft;
+                });
+
+                slider.addEventListener('touchend', () => {
+                    isDown = false;
+                });
+
+                slider.addEventListener('touchmove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.touches[0].pageX - slider.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    slider.scrollLeft = scrollLeft - walk;
                 });
             });
         });
-
-
     </script>
 </body>
 </html>
