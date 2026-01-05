@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <form action="{{ route('admin.circular-items.update', $circularItem) }}" method="POST" enctype="multipart/form-data" id="cardForm">
+                    <form action="{{ route('admin.home-page-cards.update', $circularItem) }}" method="POST" enctype="multipart/form-data" id="cardForm">
                         @csrf
                         @method('PUT')
 
@@ -18,22 +18,32 @@
                             <h3 class="text-lg font-bold mb-4 text-gray-900">Section 1: Top Thumbnails</h3>
                             
                             {{-- Existing Thumbnails --}}
+                            {{-- Existing Thumbnails (Sortable) --}}
                             @if($circularItem->section1_images && count($circularItem->section1_images) > 0)
                             <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">Current Thumbnails</label>
-                                <div class="flex gap-2 flex-wrap">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Current Thumbnails (Drag to Reorder)</label>
+                                <div id="sortable-thumbnails" class="flex gap-2 flex-wrap p-2 border border-dashed border-gray-300 rounded bg-gray-50 min-h-[100px]">
                                     @foreach($circularItem->section1_images as $thumb)
-                                    <img src="{{ Storage::url($thumb) }}" alt="Thumbnail" class="h-24 w-24 object-cover rounded-md border">
+                                    <div class="relative group cursor-move">
+                                        <img src="{{ Storage::url($thumb) }}" alt="Thumbnail" class="h-24 w-24 object-cover rounded-md border shadow-sm">
+                                        <input type="hidden" name="section1_existing[]" value="{{ $thumb }}">
+                                        <button type="button" onclick="this.parentElement.remove()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-700 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                     @endforeach
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2">Upload new images below to add more thumbnails</p>
+                                <p class="text-xs text-gray-500 mt-2">Drag images to reorder. Click 'X' to delete on save.</p>
                             </div>
                             @endif
 
                             <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">Add More Thumbnail Images</label>
-                                <input type="file" name="section1_images[]" accept="image/*" multiple class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                                <p class="text-gray-500 text-xs mt-1">Upload additional images (will be added to existing ones)</p>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Add New Thumbnail Images</label>
+                                <input type="file" name="section1_images[]" accept="image/*" multiple onchange="previewImages(this)" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <div id="new-thumbnails-preview" class="flex gap-2 flex-wrap mt-2"></div>
+                                <p class="text-gray-500 text-xs mt-1">Upload additional images (will be added after existing ones)</p>
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
@@ -63,7 +73,8 @@
 
                             <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Replace Main Image (Optional)</label>
-                                <input type="file" name="section2_image_file" accept="image/*" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2">
+                                <input type="file" name="section2_image_file" accept="image/*" onchange="previewMainImage(this)" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2">
+                                <div id="section2-image-preview" class="mb-2"></div>
                                 <label for="section2_image_url" class="block text-gray-600 text-xs mb-1">Or enter new image URL</label>
                                 <input type="url" name="section2_image_url" id="section2_image_url" placeholder="https://example.com/image.jpg" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                                 <p class="text-gray-500 text-xs mt-1">Leave both empty to keep current image</p>
@@ -76,7 +87,7 @@
 
                             <div class="mb-4">
                                 <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
-                                <textarea name="description" id="description" rows="3" placeholder="Tailored, high-performance web applications built for scale." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ old('description', $circularItem->description) }}</textarea>
+                                <textarea name="description" id="description" class="summernote shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ old('description', $circularItem->description) }}</textarea>
                             </div>
                         </div>
 
@@ -151,13 +162,125 @@
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Update Card
                             </button>
-                            <a href="{{ route('admin.circular-items.index') }}" class="text-gray-600 hover:text-gray-900">Cancel</a>
+                            <a href="{{ route('admin.home-page-cards.index') }}" class="text-gray-600 hover:text-gray-900">Cancel</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Summernote CSS/JS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <style>
+        /* Override Tailwind's Preflight Reset for Summernote Content */
+        .note-editable ul { list-style: disc !important; padding-left: 2rem !important; margin-bottom: 1rem !important; }
+        .note-editable ul ul { list-style: circle !important; }
+        .note-editable ul ul ul { list-style: square !important; }
+        .note-editable ol { list-style: decimal !important; padding-left: 2rem !important; margin-bottom: 1rem !important; }
+        .note-editable ol ol { list-style: lower-alpha !important; }
+        .note-editable ol ol ol { list-style: lower-roman !important; }
+        .note-editable li { display: list-item !important; margin-bottom: 0.25rem !important; }
+        .note-editable h1 { font-size: 2.25rem !important; font-weight: 800 !important; margin-bottom: 1rem !important; line-height: 1.2 !important; }
+        .note-editable h2 { font-size: 1.875rem !important; font-weight: 700 !important; margin-bottom: 0.75rem !important; line-height: 1.3 !important; }
+        .note-editable h3 { font-size: 1.5rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; line-height: 1.4 !important; }
+        .note-editable h4 { font-size: 1.25rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; }
+        .note-editable h5 { font-size: 1.125rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; }
+        .note-editable h6 { font-size: 1rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; }
+        .note-editable p { margin-bottom: 1rem !important; }
+        
+        /* Fix Layout & Z-Index Issues */
+        .note-editor.note-frame.fullscreen {
+            z-index: 999999 !important;
+            background-color: white !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+        .note-modal { z-index: 1000000 !important; }
+        .note-modal-backdrop { z-index: 999999 !important; }
+        .note-toolbar { z-index: 50 !important; position: relative; }
+        .dropdown-menu { z-index: 1000001 !important; }
+        .note-btn.active, .note-btn:active {
+            background-color: #d1d5db !important;
+            color: black !important;
+            border: 1px solid #9ca3af !important;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+    <script>
+        // Main Image Preview (Section 2)
+        function previewMainImage(input) {
+            const preview = document.getElementById('section2-image-preview');
+            preview.innerHTML = '';
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('h-48', 'w-auto', 'object-cover', 'rounded-md', 'border');
+                    preview.appendChild(img);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Image Preview Function
+        function previewImages(input) {
+            const preview = document.getElementById('new-thumbnails-preview');
+            preview.innerHTML = '';
+            
+            if (input.files) {
+                Array.from(input.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.classList.add('h-24', 'w-24', 'object-cover', 'rounded-md', 'border', 'shadow-sm');
+                        preview.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        // Initialize Sortable
+        document.addEventListener('DOMContentLoaded', function() {
+            const el = document.getElementById('sortable-thumbnails');
+            if (el) {
+                new Sortable(el, {
+                    animation: 150,
+                    ghostClass: 'bg-blue-100'
+                });
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.summernote').summernote({
+                placeholder: 'Start writing your content here...',
+                tabsize: 2,
+                height: 200,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear', 'strikethrough', 'superscript', 'subscript']],
+                    ['fontname', ['fontname']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'hr']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ]
+            });
+        });
+    </script>
 
     <script>
         // Color picker sync functions

@@ -13,7 +13,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Card Dimensions</h3>
-                    <form method="POST" action="{{ route('admin.circular-items.update-dimensions') }}">
+                    <form method="POST" action="{{ route('admin.home-page-cards.update-dimensions') }}">
                         @csrf
                         <div class="grid grid-cols-3 gap-4 mb-4">
                             <div>
@@ -41,7 +41,7 @@
             </div>
 
             <div class="flex justify-end mb-4">
-                <a href="{{ route('admin.circular-items.create') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                <a href="{{ route('admin.home-page-cards.create') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                     Add New Item
                 </a>
             </div>
@@ -90,8 +90,8 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <a href="{{ route('admin.circular-items.edit', $item) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                                        <form action="{{ route('admin.circular-items.destroy', $item) }}" method="POST" class="inline-block">
+                                        <a href="{{ route('admin.home-page-cards.edit', $item) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
+                                        <form action="{{ route('admin.home-page-cards.destroy', $item) }}" method="POST" class="inline-block">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>

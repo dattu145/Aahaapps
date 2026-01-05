@@ -105,7 +105,7 @@ class CircularItemController extends Controller
             'text_color' => $request->title_color,
         ]);
 
-        return redirect()->route('admin.circular-items.index')
+        return redirect()->route('admin.home-page-cards.index')
             ->with('success', 'Home Page Card created successfully.');
     }
 
@@ -140,8 +140,8 @@ class CircularItemController extends Controller
             'sort_order' => 'nullable|integer',
         ]);
 
-        // Handle Section 1 multiple image uploads (merge with existing)
-        $section1Images = $circularItem->section1_images ?? [];
+        // Handle Section 1 multiple image uploads (merge with remaining existing images)
+        $section1Images = $request->input('section1_existing', []);
         if ($request->hasFile('section1_images')) {
             foreach ($request->file('section1_images') as $image) {
                 $path = $image->store('cards/section1', 'public');
@@ -196,14 +196,14 @@ class CircularItemController extends Controller
             'text_color' => $request->title_color,
         ]);
 
-        return redirect()->route('admin.circular-items.index')
+        return redirect()->route('admin.home-page-cards.index')
             ->with('success', 'Home Page Card updated successfully.');
     }
 
     public function destroy(CircularItem $circularItem)
     {
         $circularItem->delete();
-        return redirect()->route('admin.circular-items.index')
+        return redirect()->route('admin.home-page-cards.index')
             ->with('success', 'Circular Item deleted successfully.');
     }
 
@@ -227,7 +227,7 @@ class CircularItemController extends Controller
             \App\Models\Setting::set('card_border_radius', $request->input('card_border_radius'));
         }
 
-        return redirect()->route('admin.circular-items.index')
+        return redirect()->route('admin.home-page-cards.index')
             ->with('success', 'Card dimensions updated successfully.');
     }
 }

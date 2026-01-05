@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <form action="{{ route('admin.circular-items.store') }}" method="POST" enctype="multipart/form-data" id="cardForm">
+                    <form action="{{ route('admin.home-page-cards.store') }}" method="POST" enctype="multipart/form-data" id="cardForm">
                         @csrf
 
                         {{-- Section 1: Top Thumbnails --}}
@@ -19,7 +19,8 @@
                             <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Thumbnail Images (Multiple)</label>
                                 <div id="thumbnailsContainer" class="space-y-2">
-                                    <input type="file" name="section1_images[]" accept="image/*" multiple class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                    <input type="file" name="section1_images[]" accept="image/*" multiple onchange="previewImages(this)" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                    <div id="new-thumbnails-preview" class="flex gap-2 flex-wrap mt-2"></div>
                                 </div>
                                 <p class="text-gray-500 text-xs mt-1">Upload multiple images for the top thumbnail section</p>
                             </div>
@@ -42,7 +43,8 @@
                             
                             <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Main Image</label>
-                                <input type="file" name="section2_image_file" accept="image/*" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2">
+                                <input type="file" name="section2_image_file" accept="image/*" onchange="previewMainImage(this)" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2">
+                                <div id="section2-image-preview" class="mb-2"></div>
                                 <label for="section2_image_url" class="block text-gray-600 text-xs mb-1">Or enter image URL</label>
                                 <input type="url" name="section2_image_url" id="section2_image_url" placeholder="https://example.com/image.jpg" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             </div>
@@ -54,7 +56,7 @@
 
                             <div class="mb-4">
                                 <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
-                                <textarea name="description" id="description" rows="3" placeholder="Tailored, high-performance web applications built for scale." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                                <textarea name="description" id="description" class="summernote shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ old('description') }}</textarea>
                             </div>
                         </div>
 
@@ -72,7 +74,7 @@
                             
                             <div class="mt-6">
                                 <label for="enquiry_link" class="block text-gray-700 text-sm font-bold mb-2">Enquiry Button Link</label>
-                                <input type="text" name="enquiry_link" id="enquiry_link" placeholder="/contact or https://wa.me/1234567890" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <input type="text" name="enquiry_link" id="enquiry_link" value="{{ old('enquiry_link') }}" placeholder="/contact or https://wa.me/1234567890" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                                 <p class="text-gray-500 text-xs mt-1">This link will be used for the "Enquiry" button (common for all cards)</p>
                             </div>
                         </div>
@@ -85,8 +87,8 @@
                                 <div>
                                     <label for="card_bg_color" class="block text-gray-700 text-sm font-bold mb-2">Card Background Color</label>
                                     <div class="flex gap-2 items-center">
-                                        <input type="color" name="card_bg_color" id="card_bg_color" class="h-10 w-20 rounded border border-gray-300 cursor-pointer">
-                                        <input type="text" id="card_bg_color_hex" value="#ffffff" class="shadow appearance-none border rounded flex-1 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="#FFFFFF">
+                                        <input type="color" name="card_bg_color" id="card_bg_color" value="{{ old('card_bg_color', '#ffffff') }}" class="h-10 w-20 rounded border border-gray-300 cursor-pointer">
+                                        <input type="text" id="card_bg_color_hex" value="{{ old('card_bg_color', '#FFFFFF') }}" class="shadow appearance-none border rounded flex-1 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="#FFFFFF">
                                     </div>
                                     <p class="text-gray-500 text-xs mt-1">Override global card background</p>
                                 </div>
@@ -94,8 +96,8 @@
                                 <div>
                                     <label for="title_color" class="block text-gray-700 text-sm font-bold mb-2">Title Text Color</label>
                                     <div class="flex gap-2 items-center">
-                                        <input type="color" name="title_color" id="title_color" class="h-10 w-20 rounded border border-gray-300 cursor-pointer">
-                                        <input type="text" id="title_color_hex" value="#1a1a1a" class="shadow appearance-none border rounded flex-1 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="#1A1A1A">
+                                        <input type="color" name="title_color" id="title_color" value="{{ old('title_color', '#1a1a1a') }}" class="h-10 w-20 rounded border border-gray-300 cursor-pointer">
+                                        <input type="text" id="title_color_hex" value="{{ old('title_color', '#1A1A1A') }}" class="shadow appearance-none border rounded flex-1 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="#1A1A1A">
                                     </div>
                                     <p class="text-gray-500 text-xs mt-1">Override global title color</p>
                                 </div>
@@ -103,8 +105,8 @@
                                 <div>
                                     <label for="desc_color" class="block text-gray-700 text-sm font-bold mb-2">Description Text Color</label>
                                     <div class="flex gap-2 items-center">
-                                        <input type="color" name="desc_color" id="desc_color" class="h-10 w-20 rounded border border-gray-300 cursor-pointer">
-                                        <input type="text" id="desc_color_hex" value="#6b7280" class="shadow appearance-none border rounded flex-1 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="#6B7280">
+                                        <input type="color" name="desc_color" id="desc_color" value="{{ old('desc_color', '#6b7280') }}" class="h-10 w-20 rounded border border-gray-300 cursor-pointer">
+                                        <input type="text" id="desc_color_hex" value="{{ old('desc_color', '#6B7280') }}" class="shadow appearance-none border rounded flex-1 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="#6B7280">
                                     </div>
                                     <p class="text-gray-500 text-xs mt-1">Override global description color</p>
                                 </div>
@@ -117,7 +119,7 @@
                             
                             <div class="mb-4">
                                 <label for="sort_order" class="block text-gray-700 text-sm font-bold mb-2">Sort Order</label>
-                                <input type="number" name="sort_order" id="sort_order" value="0" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <input type="number" name="sort_order" id="sort_order" value="{{ old('sort_order', 0) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             </div>
 
                             <div class="mb-4">
@@ -132,13 +134,111 @@
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Create Card
                             </button>
-                            <a href="{{ route('admin.circular-items.index') }}" class="text-gray-600 hover:text-gray-900">Cancel</a>
+                            <a href="{{ route('admin.home-page-cards.index') }}" class="text-gray-600 hover:text-gray-900">Cancel</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Summernote CSS/JS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <style>
+        /* Override Tailwind's Preflight Reset for Summernote Content */
+        .note-editable ul { list-style: disc !important; padding-left: 2rem !important; margin-bottom: 1rem !important; }
+        .note-editable ul ul { list-style: circle !important; }
+        .note-editable ul ul ul { list-style: square !important; }
+        .note-editable ol { list-style: decimal !important; padding-left: 2rem !important; margin-bottom: 1rem !important; }
+        .note-editable ol ol { list-style: lower-alpha !important; }
+        .note-editable ol ol ol { list-style: lower-roman !important; }
+        .note-editable li { display: list-item !important; margin-bottom: 0.25rem !important; }
+        .note-editable h1 { font-size: 2.25rem !important; font-weight: 800 !important; margin-bottom: 1rem !important; line-height: 1.2 !important; }
+        .note-editable h2 { font-size: 1.875rem !important; font-weight: 700 !important; margin-bottom: 0.75rem !important; line-height: 1.3 !important; }
+        .note-editable h3 { font-size: 1.5rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; line-height: 1.4 !important; }
+        .note-editable h4 { font-size: 1.25rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; }
+        .note-editable h5 { font-size: 1.125rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; }
+        .note-editable h6 { font-size: 1rem !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; }
+        .note-editable p { margin-bottom: 1rem !important; }
+        
+        /* Fix Layout & Z-Index Issues */
+        .note-editor.note-frame.fullscreen {
+            z-index: 999999 !important;
+            background-color: white !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+        .note-modal { z-index: 1000000 !important; }
+        .note-modal-backdrop { z-index: 999999 !important; }
+        .note-toolbar { z-index: 50 !important; position: relative; }
+        .dropdown-menu { z-index: 1000001 !important; }
+        .note-btn.active, .note-btn:active {
+            background-color: #d1d5db !important;
+            color: black !important;
+            border: 1px solid #9ca3af !important;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
+    <script>
+        // Main Image Preview (Section 2)
+        function previewMainImage(input) {
+            const preview = document.getElementById('section2-image-preview');
+            preview.innerHTML = '';
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('h-48', 'w-auto', 'object-cover', 'rounded-md', 'border');
+                    preview.appendChild(img);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Image Preview Function
+        function previewImages(input) {
+            const preview = document.getElementById('new-thumbnails-preview');
+            preview.innerHTML = '';
+            
+            if (input.files) {
+                Array.from(input.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.classList.add('h-24', 'w-24', 'object-cover', 'rounded-md', 'border', 'shadow-sm');
+                        preview.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        $(document).ready(function() {
+            $('.summernote').summernote({
+                placeholder: 'Start writing your content here...',
+                tabsize: 2,
+                height: 200,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear', 'strikethrough', 'superscript', 'subscript']],
+                    ['fontname', ['fontname']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'hr']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ]
+            });
+        });
+    </script>
 
     <script>
         // Color picker sync functions

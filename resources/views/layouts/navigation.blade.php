@@ -22,7 +22,7 @@
                         {{ __('Pages') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('admin.circular-items.index')" :active="request()->routeIs('admin.circular-items.*')">
+                    <x-nav-link :href="route('admin.home-page-cards.index')" :active="request()->routeIs('admin.home-page-cards.*')">
                         {{ __('Home Page Cards') }}
                     </x-nav-link>
                     <x-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
@@ -90,7 +90,7 @@
                 {{ __('Pages') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('admin.circular-items.index')" :active="request()->routeIs('admin.circular-items.*')">
+            <x-responsive-nav-link :href="route('admin.home-page-cards.index')" :active="request()->routeIs('admin.home-page-cards.*')">
                 {{ __('Home Page Cards') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
